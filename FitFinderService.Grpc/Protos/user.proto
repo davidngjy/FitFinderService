@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package fitfinder.proto;
+
+option csharp_namespace = "FitFinderService.Grpc";
+
+service UserService {
+	rpc GetUser (GetUserRequest) returns (GetUserReply);
+
+	rpc GetUserStream (GetUserRequest) returns (stream GetUserReply);
+}
+
+message GetUserRequest {
+	string requestIdToken = 1;
+}
+
+message GetUserReply {
+	int64 id = 1;
+}
