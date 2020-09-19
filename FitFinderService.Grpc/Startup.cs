@@ -1,5 +1,8 @@
 ﻿using FitFinderService.Gateway;
+using FitFinderService.Grpc.Authentication;
 using FitFinderService.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +28,25 @@ namespace FitFinderService.Grpc
 			services.AddGrpc();
 			services.RegisterGateway();
 			services.RegisterInfrastructure(Configuration);
+
+			services.AddAuthentication(o =>
+			{
+				o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+			}).AddJwtBearer(o =>
+			{
+				o.SecurityTokenValidators.Clear();
+				o.SecurityTokenValidators.Add(new GoogleTokenValidator());
+				o.Events = new GoogleTokenEvents();
+			});
+
+			services.AddAuthorization(o =>
+			{
+				o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+					.RequireAuthenticatedUser()
+					.Build();
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,6 +58,9 @@ namespace FitFinderService.Grpc
 			}
 
 			app.UseRouting();
+
+			app.UseAuthentication();
+			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
 			{
