@@ -43,7 +43,7 @@ namespace FitFinderService.Grpc
 
 			services.AddAuthorization(o =>
 			{
-				o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+				o.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
 					.RequireAuthenticatedUser()
 					.Build();
 			});

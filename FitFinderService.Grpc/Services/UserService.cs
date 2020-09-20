@@ -1,11 +1,13 @@
-using System.Threading.Tasks;
 using FitFinderService.Application.Interface;
+using FitFinderService.Proto;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace FitFinderService.Grpc.Services
 {
-	public class UserService : Grpc.UserService.UserServiceBase
+	public class UserService : Proto.UserService.UserServiceBase
 	{
 		private readonly ILogger<UserService> _logger;
 		private readonly IGoogleGateway _googleGateway;
@@ -16,33 +18,24 @@ namespace FitFinderService.Grpc.Services
 			_googleGateway = googleGateway;
 		}
 
-		public override Task<GetUserReply> GetUser(GetUserRequest request, ServerCallContext context)
+		[AllowAnonymous]
+		public override async Task ConnectUser(ConnectUserRequest request, IServerStreamWriter<ConnectUserResponse> responseStream, ServerCallContext context)
 		{
-			_logger.LogInformation($"Token received: {request.RequestIdToken}");
+			_logger.LogInformation($"Connect requested TokenId: {request.RequestIdToken}");
 
-			var response = _googleGateway.VerifyUserToken(request.RequestIdToken);
+			await responseStream.WriteAsync(new ConnectUserResponse {Status = ConnectUserResponse.Types.Status.Verifying});
+			_googleGateway.VerifyUserToken(request.RequestIdToken);
+			
+			// Check if user existed
+			// If not
+			await responseStream.WriteAsync(new ConnectUserResponse {Status = ConnectUserResponse.Types.Status.Creating});
+			// Create the user
 
-			return Task.FromResult(new GetUserReply
-			{
-				Id = 12345
-			});
-		}
+			await responseStream.WriteAsync(new ConnectUserResponse {Status = ConnectUserResponse.Types.Status.Retrieving});
+			// Then retrieve user from DB
 
-		public override async Task GetUserStream(GetUserRequest request, IServerStreamWriter<GetUserReply> responseStream, ServerCallContext context)
-		{
-			_logger.LogInformation($"Token received: {request.RequestIdToken}");
-
-			await Task.Delay(10000);
-			await responseStream.WriteAsync(new GetUserReply { Id = 1 });
-			await Task.Delay(10000);
-			await responseStream.WriteAsync(new GetUserReply { Id = 2 });
-			await Task.Delay(10000);
-			await responseStream.WriteAsync(new GetUserReply { Id = 3 });
-			await Task.Delay(10000);
-			await responseStream.WriteAsync(new GetUserReply { Id = 4 });
-			await Task.Delay(10000);
-			await responseStream.WriteAsync(new GetUserReply { Id = 5 });
-
+			// Done return the user profile!
+			await responseStream.WriteAsync(new ConnectUserResponse {Status = ConnectUserResponse.Types.Status.Connected, UserProfile = new UserProfile()});
 		}
 	}
 }

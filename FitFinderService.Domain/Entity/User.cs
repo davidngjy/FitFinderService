@@ -8,7 +8,7 @@ namespace FitFinderService.Domain.Entity
 		public string GoogleId { get; set; }
 		public string DisplayName{ get; set; }
 		public string Email { get; set; }
-		public UserRole? UserRole { get; set; }
+		public UserRole UserRole { get; set; }
 		public string ProfilePictureUri { get; set; }
 	}
 }
