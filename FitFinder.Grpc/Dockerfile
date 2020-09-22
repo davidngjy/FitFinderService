@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["FitFinderService.Grpc/FitFinderService.Grpc.csproj", "FitFinderService.Grpc/"]
-RUN dotnet restore "FitFinderService.Grpc/FitFinderService.Grpc.csproj"
+COPY ["FitFinder.Grpc/FitFinder.Grpc.csproj", "FitFinder.Grpc/"]
+RUN dotnet restore "FitFinder.Grpc/FitFinder.Grpc.csproj"
 COPY . .
-WORKDIR "/src/FitFinderService.Grpc"
-RUN dotnet build "FitFinderService.Grpc.csproj" -c Release -o /app/build
+WORKDIR "/src/FitFinder.Grpc"
+RUN dotnet build "FitFinder.Grpc.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "FitFinderService.Grpc.csproj" -c Release -o /app/publish
+RUN dotnet publish "FitFinder.Grpc.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "FitFinderService.Grpc.dll"]
+ENTRYPOINT ["dotnet", "FitFinder.Grpc.dll"]
