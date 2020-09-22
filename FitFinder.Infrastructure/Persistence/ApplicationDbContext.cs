@@ -52,7 +52,6 @@ namespace FitFinder.Infrastructure.Persistence
 
 			foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
 			{
-				// TODO: replace created by with claims
 				if (entry.State == EntityState.Added)
 				{
 					entry.Entity.CreatedByUserId = currentUserId;

@@ -1,6 +1,6 @@
-﻿using System.Reflection;
-using AutoMapper;
-using MediatR;
+﻿using AutoMapper;
+using FitFinder.Application.Handler;
+using FitFinder.Application.Interface;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FitFinder.Application
@@ -9,8 +9,9 @@ namespace FitFinder.Application
 	{
 		public static void RegisterApplication(this IServiceCollection service)
 		{
-			service.AddMediatR(Assembly.GetExecutingAssembly());
 			service.AddAutoMapper(a => a.AddProfile(new AutoMapperProfile()));
+
+			service.AddTransient<IUserHandler, UserHandler>();
 		}
 	}
 }

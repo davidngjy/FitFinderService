@@ -1,6 +1,6 @@
-﻿namespace FitFinder.Application.Users.Query.GetUserProfile
+﻿namespace FitFinder.Application.Model
 {
-	public class UserProfileDto
+	public class UserProfile
 	{
 		public long Id { get; set; }
 

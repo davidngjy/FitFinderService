@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using FitFinder.Application.Users.Command.CreateUser;
-using FitFinder.Application.Users.Query.GetUserProfile;
-using FitFinder.Application.Users.Query.VerifyUser;
+using FitFinder.Application.Model;
 using FitFinder.Domain.Entity;
 
 namespace FitFinder.Application
@@ -10,13 +8,11 @@ namespace FitFinder.Application
 	{
 		public AutoMapperProfile()
 		{
-			CreateMap<User, UserProfileDto>()
+			CreateMap<User, UserProfile>()
 				.ForMember(d => d.UserRole, 
 					opt => opt.MapFrom(s => (int) s.UserRoleId));
 
-			CreateMap<VerifiedUser, CreateUserCommand>();
-
-			CreateMap<CreateUserCommand, User>();
+			CreateMap<VerifiedUser, User>();
 		}
 	}
 }

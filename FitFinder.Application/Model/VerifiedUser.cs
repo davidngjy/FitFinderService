@@ -1,4 +1,4 @@
-﻿namespace FitFinder.Application.Users.Query.VerifyUser
+﻿namespace FitFinder.Application.Model
 {
 	public class VerifiedUser
 	{

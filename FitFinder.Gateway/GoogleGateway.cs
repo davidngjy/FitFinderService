@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using FitFinder.Application.Interface;
-using FitFinder.Application.Users.Query.VerifyUser;
+using FitFinder.Application.Model;
 using Google.Apis.Auth;
 
 namespace FitFinder.Gateway
 {
 	internal class GoogleGateway : IGoogleGateway
 	{
-		public async Task<VerifiedUser> VerifyUserToken(string token)
+		public async Task<VerifiedUser> VerifyUserToken(string tokenId)
 		{
-			var payload = await GoogleJsonWebSignature.ValidateAsync(token);
-			var userDto = new VerifiedUser
+			var payload = await GoogleJsonWebSignature.ValidateAsync(tokenId);
+			var verifiedUser = new VerifiedUser
 			{
 				GoogleId = payload.Subject,
 				DisplayName = payload.Name,
@@ -18,7 +18,7 @@ namespace FitFinder.Gateway
 				ProfilePictureUri = payload.Picture
 			};
 
-			return userDto;
+			return verifiedUser;
 		}
 	}
 }

@@ -4,24 +4,12 @@ package fitfinder.proto;
 
 option csharp_namespace = "FitFinderService.Proto";
 
-service UserService {
-	rpc GetUser (GetUserRequest) returns (GetUserReply);
-
-	rpc GetUserStream (GetUserRequest) returns (stream GetUserReply);
-	
+service UserProtocol {	
 	rpc ConnectUser(ConnectUserRequest) returns (stream ConnectUserResponse);
 }
 
-message GetUserRequest {
-	string requestIdToken = 1;
-}
-
-message GetUserReply {
-	int64 id = 1;
-}
-
 message ConnectUserRequest {
-	string requestIdToken = 1;
+	string googleTokenId = 1;
 }
 
 message ConnectUserResponse {
