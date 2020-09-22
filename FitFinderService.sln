@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30330.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinderService.Grpc", "FitFinderService.Grpc\FitFinderService.Grpc.csproj", "{940B2DD9-007F-4B66-BC04-D94D76E197AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinder.Grpc", "FitFinder.Grpc\FitFinder.Grpc.csproj", "{940B2DD9-007F-4B66-BC04-D94D76E197AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinderService.Gateway", "FitFinderService.Gateway\FitFinderService.Gateway.csproj", "{B5B2C09F-3DB3-4EE9-8090-776BEA097F6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinder.Gateway", "FitFinder.Gateway\FitFinder.Gateway.csproj", "{B5B2C09F-3DB3-4EE9-8090-776BEA097F6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinderService.Domain", "FitFinderService.Domain\FitFinderService.Domain.csproj", "{5C28F4F7-2335-498E-AA14-973EF145F0FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinder.Domain", "FitFinder.Domain\FitFinder.Domain.csproj", "{5C28F4F7-2335-498E-AA14-973EF145F0FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinderService.Application", "FitFinderService.Application\FitFinderService.Application.csproj", "{6348B989-5D5A-41AD-8505-7A2777EA78D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinder.Application", "FitFinder.Application\FitFinder.Application.csproj", "{6348B989-5D5A-41AD-8505-7A2777EA78D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinderService.Infrastructure", "FitFinderService.Infrastructure\FitFinderService.Infrastructure.csproj", "{85497A0D-CEEB-4E36-97EB-B406F5341545}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitFinder.Infrastructure", "FitFinder.Infrastructure\FitFinder.Infrastructure.csproj", "{85497A0D-CEEB-4E36-97EB-B406F5341545}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

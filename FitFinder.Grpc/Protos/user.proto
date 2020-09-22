@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package fitfinder.proto;
+
+option csharp_namespace = "FitFinderService.Proto";
+
+service UserService {
+	rpc GetUser (GetUserRequest) returns (GetUserReply);
+
+	rpc GetUserStream (GetUserRequest) returns (stream GetUserReply);
+	
+	rpc ConnectUser(ConnectUserRequest) returns (stream ConnectUserResponse);
+}
+
+message GetUserRequest {
+	string requestIdToken = 1;
+}
+
+message GetUserReply {
+	int64 id = 1;
+}
+
+message ConnectUserRequest {
+	string requestIdToken = 1;
+}
+
+message ConnectUserResponse {
+	enum Status {
+		Verifying = 0;
+		Creating = 1;
+		Retrieving = 2;
+		Connected = 3;
+		Failed = 4;
+	}
+	Status status = 1;
+	UserProfile userProfile = 2;
+}
+
+message UserProfile {
+	int64 id = 1;
+	string googleId = 2;
+	string displayName = 3;
+	string email = 4;
+	string profilePictureUri = 5;
+	UserRole userRole = 6;
+
+	enum UserRole {
+		Admin = 0;
+		Trainer = 1;
+		User = 3;
+	}
+}
+
+message HelloWorld {
+	string hello = 1;
+}
