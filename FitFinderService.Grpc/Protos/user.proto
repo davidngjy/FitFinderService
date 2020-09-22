@@ -30,6 +30,7 @@ message ConnectUserResponse {
 		Creating = 1;
 		Retrieving = 2;
 		Connected = 3;
+		Failed = 4;
 	}
 	Status status = 1;
 	UserProfile userProfile = 2;

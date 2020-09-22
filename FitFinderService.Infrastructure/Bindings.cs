@@ -12,7 +12,7 @@ namespace FitFinderService.Infrastructure
 		{
 			service.AddDbContext<ApplicationDbContext>(options =>
 				options.UseSqlServer(
-					configuration.GetConnectionString("DefaultConnectionString")));
+					configuration.GetConnectionString("DefaultConnection")));
 
 			service.AddScoped<IApplicationDbContext>(provider =>
 				provider.GetService<ApplicationDbContext>());

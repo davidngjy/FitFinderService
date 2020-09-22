@@ -1,4 +1,7 @@
-﻿using FitFinderService.Gateway;
+﻿using System.Security.Claims;
+using FitFinderService.Application;
+using FitFinderService.Application.Interface;
+using FitFinderService.Gateway;
 using FitFinderService.Grpc.Authentication;
 using FitFinderService.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +31,11 @@ namespace FitFinderService.Grpc
 			services.AddGrpc();
 			services.RegisterGateway();
 			services.RegisterInfrastructure(Configuration);
+			services.RegisterApplication();
+
+			services.AddHttpContextAccessor();
+
+			services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 			services.AddAuthentication(o =>
 			{
@@ -45,6 +53,7 @@ namespace FitFinderService.Grpc
 			{
 				o.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
 					.RequireAuthenticatedUser()
+					.RequireClaim(ClaimTypes.Role)
 					.Build();
 			});
 		}

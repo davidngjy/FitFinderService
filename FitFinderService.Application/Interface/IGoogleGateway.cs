@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using FitFinderService.Domain.Entity;
+using FitFinderService.Application.Users.Query.VerifyUser;
 
 namespace FitFinderService.Application.Interface
 {
 	public interface IGoogleGateway
 	{
-		Task<User> VerifyUserToken(string token);
+		Task<VerifiedUser> VerifyUserToken(string token);
 	}
 }

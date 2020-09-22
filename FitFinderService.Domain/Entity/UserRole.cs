@@ -1,10 +1,21 @@
-﻿namespace FitFinderService.Domain.Entity
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace FitFinderService.Domain.Entity
 {
-	public enum UserRole
+	public enum UserRoleId
 	{
-		Admin = 1,
-		Trainer = 2,
-		User = 3
+		Admin = 0,
+		Trainer = 1,
+		User = 2
+	}
+
+	public class UserRole
+	{
+		public UserRoleId UserRoleId { get; set; }
+		public string Name { get; set; }
+
+		public IList<User> Users { get; set; }
 	}
 
 	public static class Role
