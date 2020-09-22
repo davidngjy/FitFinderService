@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "FitFinderService.Grpc": {
+    "FitFinder.Grpc": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -47,10 +47,6 @@ message UserProfile {
 	enum UserRole {
 		Admin = 0;
 		Trainer = 1;
-		User = 3;
+		User = 2;
 	}
-}
-
-message HelloWorld {
-	string hello = 1;
 }
