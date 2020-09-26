@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+package fitfinder.proto;
+
+option csharp_namespace = "FitFinderService.Proto";
+
+message UserProfile {
+	int64 id = 1;
+	string googleId = 2;
+	string displayName = 3;
+	string email = 4;
+	string profilePictureUri = 5;
+	UserRole userRole = 6;
+
+	enum UserRole {
+		Admin = 0;
+		Trainer = 1;
+		User = 2;
+	}
+}

@@ -28,9 +28,9 @@ namespace FitFinder.Grpc.Services
 			try
 			{
 				await responseStream.WriteAsync(new ConnectUserResponse {Status = ConnectUserResponse.Types.Status.Verifying});
-
+				
 				var verifiedUser = await _userHandler.VerifyUser(request.GoogleTokenId);
-				var user = await _userHandler.GetUserProfile(request.GoogleTokenId, ct);
+				var user = await _userHandler.GetUserProfile(verifiedUser.GoogleId, ct);
 
 				if (user == null)
 				{
@@ -39,9 +39,10 @@ namespace FitFinder.Grpc.Services
 					await _userHandler.CreateUser(verifiedUser, ct);
 				}
 
+				await Task.Delay(2000);
 				await responseStream.WriteAsync(new ConnectUserResponse {Status = ConnectUserResponse.Types.Status.Retrieving});
 				var userProfile = await _userHandler.GetUserProfile(verifiedUser.GoogleId, ct);
-
+				await Task.Delay(2000);
 				// Done return the user profile!
 				await responseStream.WriteAsync(new ConnectUserResponse
 				{
@@ -53,7 +54,7 @@ namespace FitFinder.Grpc.Services
 						DisplayName = userProfile.DisplayName,
 						Email = userProfile.Email,
 						ProfilePictureUri = userProfile.ProfilePictureUri,
-						UserRole = (UserProfile.Types.UserRole) userProfile.UserRole
+						UserRole = (UserProfile.Types.UserRole)userProfile.UserRole
 					}
 				});
 			}
