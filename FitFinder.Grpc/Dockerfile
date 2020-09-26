@@ -1,7 +1,12 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
+ARG sqlusername
+ARG sqlpassword
+
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
+ENV sql_username=sqlusername
+ENV sql_password=sqlpassword
 EXPOSE 80
 EXPOSE 443
 

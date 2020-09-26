@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitFinder.Infrastructure.Persistence
 {
-	internal class ApplicationDbContext : DbContext, IApplicationDbContext
+	public class ApplicationDbContext : DbContext, IApplicationDbContext
 	{
 		private readonly ICurrentUserService _currentUserService;
 
