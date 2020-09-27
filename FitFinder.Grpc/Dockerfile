@@ -4,6 +4,8 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 ENV sql_username=
 ENV sql_password=
 ENV ASPNETCORE_ENVIRONMENT=
+LABEL org.opencontainers.image.authors DavidNg
+LABEL org.opencontainers.image.source https://github.com/davidngjy/FitFinderService
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
