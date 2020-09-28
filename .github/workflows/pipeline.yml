@@ -47,7 +47,8 @@ jobs:
         run: gcloud auth configure-docker
         
       - name: Build Docker Image
-        run: docker build \
+        run: |
+            docker build \
               -f FitFinder.Grpc/Dockerfile \
               -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} \
               .
@@ -56,7 +57,8 @@ jobs:
         run: docker push asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA}
         
       - name: Deploy to Google Cloud Run
-        run: gcloud run deploy fitfinderservicetest \
+        run: |
+            gcloud run deploy fitfinderservicetest \
               --image asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} \
               --platform managed \
               --region australia-southeast1
