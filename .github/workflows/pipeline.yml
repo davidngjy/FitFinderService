@@ -35,7 +35,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - name: Setup Google Cloud Platform
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           service_account_email: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
           service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS}}
@@ -43,7 +44,7 @@ jobs:
           export_default_credentials: true
         
       - name: Build Docker Image
-        run: docker build -f .\FitFinder.Grpc\Dockerfile -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} .
+        run: docker build -f FitFinder.Grpc/Dockerfile -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} .
         
       - name: Push Docker Image to Google Container Registry
         run: docker push asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA}
