@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Login to Docker (Google Cloud)
-        run: docker login https://asia.gcr.io -u _json_key --password ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} | docker login https://asia.gcr.io -u _json_key --password-stdin 
         
       - name: Build Docker Image
         run: docker build -f .\FitFinder.Grpc\Dockerfile -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} .
