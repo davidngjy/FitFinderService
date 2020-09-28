@@ -34,9 +34,13 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Login to Docker (Google Cloud)
-        run: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} | docker login https://asia.gcr.io -u _json_key --password-stdin 
+        
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          service_account_email: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+          project_id:  ${{ secrets.GOOGLE_PROJECT_ID }}
+          export_default_credentials: true
         
       - name: Build Docker Image
         run: docker build -f .\FitFinder.Grpc\Dockerfile -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} .
@@ -45,9 +49,4 @@ jobs:
         run: docker push asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA}
         
       - name: Deploy to Google Cloud Run
-        uses: actions-hub/gcloud@master
-        env:
-          PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
-          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        with:
-          args: run deploy fitfinderservicetest --image asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA}
+        run: gcloud run deploy fitfinderservicetest --image asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA}
