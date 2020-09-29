@@ -52,7 +52,8 @@ jobs:
         run: |
             docker build \
               -f FitFinder.Grpc/Dockerfile \
-              -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} ghcr.io/davidngjy/fitfinderservice:${GITHUB_SHA} \
+              -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} \
+              -t ghcr.io/davidngjy/fitfinderservice:${GITHUB_SHA} \
               .
         
       - name: Push to Google Container Registry
