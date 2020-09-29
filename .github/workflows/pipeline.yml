@@ -53,11 +53,13 @@ jobs:
             docker build \
               -f FitFinder.Grpc/Dockerfile \
               -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} \
+              -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:latest \
               -t ghcr.io/davidngjy/fitfinderservice:${GITHUB_SHA} \
+              -t ghcr.io/davidngjy/fitfinderservice:latest \
               .
         
       - name: Push to Google Container Registry
-        run: docker push asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA}
+        run: docker push asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice
         
       - name: Deploy to Google Cloud Run (Test container)
         run: |
@@ -70,4 +72,4 @@ jobs:
         run: docker login ghcr.io -u davidngjy --password ${{ secrets.PACKAGE_CREDENTIAL }}
 
       - name: Push to GitHub Container Registry
-        run: docker push ghcr.io/davidngjy/fitfinderservice:${GITHUB_SHA}
+        run: docker push ghcr.io/davidngjy/fitfinderservice
