@@ -1,4 +1,4 @@
-name: Build and Deploy to Cloud Run (Test container)
+name: Build/Deploy to Cloud Run (Test)
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
   
   deploy:
     if: github.ref == 'refs/heads/master'
-    name: Deploy to Cloud Run
+    name: Deploy to Cloud Run (Test)
     runs-on: ubuntu-latest
     needs: [build]
     steps:
@@ -52,15 +52,21 @@ jobs:
         run: |
             docker build \
               -f FitFinder.Grpc/Dockerfile \
-              -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} \
+              -t asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} ghcr.io/davidngjy/fitfinderservice:${GITHUB_SHA} \
               .
         
-      - name: Push Docker Image to Google Container Registry
+      - name: Push to Google Container Registry
         run: docker push asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA}
         
-      - name: Deploy to Google Cloud Run
+      - name: Deploy to Google Cloud Run (Test container)
         run: |
             gcloud run deploy fitfinderservicetest \
               --image asia.gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/fitfinderservice:${GITHUB_SHA} \
               --platform managed \
               --region australia-southeast1
+
+      - name: Login to Docker (GitHub)
+        run: docker login ghcr.io -u davidngjy --password ${{ secrets.PACKAGE_CREDENTIAL }}
+
+      - name: Push to GitHub Container Registry
+        run: docker push ghcr.io/davidngjy/fitfinderservice:${GITHUB_SHA}
