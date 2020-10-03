@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Protobuf Include="Protos\user.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\user_profile.proto" GrpcServices="None" />
   </ItemGroup>
 
   <ItemGroup>

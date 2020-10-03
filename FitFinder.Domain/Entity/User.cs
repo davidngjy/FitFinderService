@@ -15,6 +15,5 @@ namespace FitFinder.Domain.Entity
 
 		[Required]
 		public UserRoleId UserRoleId { get; set; }
-		public UserRole UserRole { get; set; }
 	}
 }

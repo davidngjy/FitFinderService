@@ -1,19 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using EntityFrameworkCore.Triggers;
 using FitFinder.Application.Interface;
 using FitFinder.Domain.Common;
 using FitFinder.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FitFinder.Infrastructure.Persistence
 {
-	public class ApplicationDbContext : DbContext, IApplicationDbContext
+	public class ApplicationDbContext : DbContextWithTriggers, IApplicationDbContext
 	{
 		private readonly ICurrentUserService _currentUserService;
 
-		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService) 
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUserService)
 			: base(options)
 		{
 			_currentUserService = currentUserService;
@@ -22,7 +23,7 @@ namespace FitFinder.Infrastructure.Persistence
 		public DbSet<User> Users { get; set; }
 
 		// To generate UserRole table
-		private DbSet<UserRole> UserRoles { get; set; } 
+		private DbSet<UserRole> UserRoles { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -59,7 +60,7 @@ namespace FitFinder.Infrastructure.Persistence
 				}
 
 				if (entry.State == EntityState.Added ||
-				    entry.State == EntityState.Modified)
+					entry.State == EntityState.Modified)
 				{
 					entry.Entity.LastModifiedByUserId = currentUserId;
 					entry.Entity.LastModifiedUtc = DateTime.UtcNow;

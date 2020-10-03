@@ -1,5 +1,8 @@
-﻿using FitFinder.Application.Interface;
+﻿using EntityFrameworkCore.Rx;
+using EntityFrameworkCore.Triggers;
+using FitFinder.Application.Interface;
 using FitFinder.Infrastructure.Persistence;
+using FitFinder.Infrastructure.Subscription;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +22,11 @@ namespace FitFinder.Infrastructure
 
 			service.AddScoped<IApplicationDbContext>(provider =>
 				provider.GetService<ApplicationDbContext>());
+
+			service.AddTransient<IUserSubscription, UserSubscription>();
+
+			service.AddDbObservables();
+			service.AddTriggers();
 		}
 	}
 }

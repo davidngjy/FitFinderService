@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using FitFinder.Application.Interface;
 using FitFinder.Application.Model;
 using FitFinder.Domain.Entity;
@@ -13,12 +14,14 @@ namespace FitFinder.Application.Handler
 	{
 		private readonly IApplicationDbContext _context;
 		private readonly IGoogleGateway _googleGateway;
+		private readonly IUserSubscription _userSubscription;
 		private readonly IMapper _mapper;
 
-		public UserHandler(IApplicationDbContext context, IGoogleGateway googleGateway, IMapper mapper)
+		public UserHandler(IApplicationDbContext context, IGoogleGateway googleGateway, IUserSubscription userSubscription, IMapper mapper)
 		{
 			_context = context;
 			_googleGateway = googleGateway;
+			_userSubscription = userSubscription;
 			_mapper = mapper;
 		}
 
@@ -40,6 +43,31 @@ namespace FitFinder.Application.Handler
 				.Where(u => u.GoogleId == googleId)
 				.FirstOrDefaultAsync(ct);
 			return _mapper.Map<User, UserProfile>(user);
+		}
+
+		public async Task UpdateUserProfile(long userId,
+			string displayName,
+			string email,
+			string profilePictureUri, 
+			CancellationToken ct)
+		{
+			var user = await _context
+				.Users
+				.Where(u => u.Id == userId)
+				.FirstOrDefaultAsync(ct);
+
+			user.DisplayName = displayName;
+			user.Email = email;
+			user.ProfilePictureUri = profilePictureUri;
+			await _context.SaveChangesAsync(ct);
+		}
+
+		public IDisposable SubscribeToUserProfile(long userId, Action<UserProfile> callback)
+		{
+			return _userSubscription.SubscribeToUser(userId, user =>
+			{
+				callback(_mapper.Map<User, UserProfile>(user));
+			});
 		}
 	}
 }

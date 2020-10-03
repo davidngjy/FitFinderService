@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 
 namespace FitFinder.Grpc.Services
 {
@@ -39,10 +40,9 @@ namespace FitFinder.Grpc.Services
 					await _userHandler.CreateUser(verifiedUser, ct);
 				}
 
-				await Task.Delay(2000);
 				await responseStream.WriteAsync(new ConnectUserResponse {Status = ConnectUserResponse.Types.Status.Retrieving});
 				var userProfile = await _userHandler.GetUserProfile(verifiedUser.GoogleId, ct);
-				await Task.Delay(2000);
+				
 				// Done return the user profile!
 				await responseStream.WriteAsync(new ConnectUserResponse
 				{
@@ -63,7 +63,41 @@ namespace FitFinder.Grpc.Services
 				_logger.LogError(ex, "Error while trying to connect user token: {token}", request.GoogleTokenId);
 				await responseStream.WriteAsync(new ConnectUserResponse { Status = ConnectUserResponse.Types.Status.Failed });
 			}
-			
+		}
+
+		public override async Task SubscribeToUserProfile(SubscribeUserProfileRequest request, IServerStreamWriter<UserProfile> responseStream, ServerCallContext context)
+		{
+			try
+			{
+				using (_userHandler.SubscribeToUserProfile(request.Id, async user =>
+				{
+					await responseStream.WriteAsync(new UserProfile
+					{
+						Id = user.Id,
+						GoogleId = user.GoogleId,
+						DisplayName = user.DisplayName,
+						Email = user.Email,
+						ProfilePictureUri = user.ProfilePictureUri,
+						UserRole = (UserProfile.Types.UserRole) user.UserRole
+					});
+				}))
+					await Task.Delay(-1, context.CancellationToken);
+			}
+			catch (TaskCanceledException ex)
+			{
+				_logger.LogInformation(ex , "User {id} stopped subscribing to UserProfile", request.Id);
+			}
+		}
+
+		public override async Task<Empty> UpdateUserProfile(UpdateUserProfileRequest request, ServerCallContext context)
+		{
+			await _userHandler.UpdateUserProfile(
+				request.UserId,
+				request.DisplayName,
+				request.Email,
+				request.ProfilePictureUri, 
+				context.CancellationToken);
+			return new Empty();
 		}
 	}
 }
