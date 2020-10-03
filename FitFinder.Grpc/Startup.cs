@@ -20,20 +20,25 @@ namespace FitFinder.Grpc
 	public class Startup
 	{
 		private IConfiguration Configuration { get; }
+		private IWebHostEnvironment Environment { get; }
 
-		public Startup(IConfiguration configuration)
+		public Startup(IConfiguration configuration, IWebHostEnvironment environment)
 		{
 			Configuration = configuration;
+			Environment = environment;
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.Configure<KestrelServerOptions>(opt =>
+			if (Configuration.GetValue<string>("PORT", null) != null)
 			{
-				opt.ListenAnyIP(Configuration.GetValue("PORT", 80));
-			});
+				services.Configure<KestrelServerOptions>(opt =>
+				{
+					opt.ListenAnyIP(Configuration.GetValue("PORT", 80));
+				});
+			}
 
 			services.AddGrpc();
 			services.RegisterGateway();
@@ -44,25 +49,28 @@ namespace FitFinder.Grpc
 
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-			services.AddAuthentication(o =>
+			if (!Environment.IsDevelopment())
 			{
-				o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				services.AddAuthentication(o =>
+				{
+					o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+					o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-			}).AddJwtBearer(o =>
-			{
-				o.SecurityTokenValidators.Clear();
-				o.SecurityTokenValidators.Add(new GoogleTokenValidator());
-				o.Events = new GoogleTokenEvent();
-			});
+				}).AddJwtBearer(o =>
+				{
+					o.SecurityTokenValidators.Clear();
+					o.SecurityTokenValidators.Add(new GoogleTokenValidator());
+					o.Events = new GoogleTokenEvent();
+				});
 
-			services.AddAuthorization(o =>
-			{
-				o.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-					.RequireAuthenticatedUser()
-					.RequireClaim(ClaimTypes.Role)
-					.Build();
-			});
+				services.AddAuthorization(o =>
+				{
+					o.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+						.RequireAuthenticatedUser()
+						.RequireClaim(ClaimTypes.Role)
+						.Build();
+				});
+			}
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,8 +83,11 @@ namespace FitFinder.Grpc
 
 			app.UseRouting();
 
-			app.UseAuthentication();
-			app.UseAuthorization();
+			if (!Environment.IsDevelopment())
+			{
+				app.UseAuthentication();
+				app.UseAuthorization();
+			}
 
 			app.UseEndpoints(endpoints =>
 			{

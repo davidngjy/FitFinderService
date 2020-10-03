@@ -1,16 +1,16 @@
 {
   "profiles": {
-    "FitFinder.Grpc LocalDevelopment": {
+    "FitFinder.Grpc Development": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "LocalDevelopment"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5001"
     },
-    "FitFinder.Grpc Development": {
+    "FitFinder.Grpc Staging": {
 	    "commandName": "Project",
 	    "environmentVariables": {
-		    "ASPNETCORE_ENVIRONMENT": "Development"
+		    "ASPNETCORE_ENVIRONMENT": "Staging"
 	    },
 	    "applicationUrl": "http://localhost:5001"
     },
