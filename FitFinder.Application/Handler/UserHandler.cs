@@ -45,6 +45,14 @@ namespace FitFinder.Application.Handler
 			return _mapper.Map<User, UserProfile>(user);
 		}
 
+		public async Task<UserProfile> GetUserProfile(long userId, CancellationToken ct)
+		{
+			var user = await _context.Users
+				.Where(u => u.Id == userId)
+				.FirstOrDefaultAsync(ct);
+			return _mapper.Map<User, UserProfile>(user);
+		}
+
 		public async Task UpdateUserProfile(long userId,
 			string displayName,
 			string email,

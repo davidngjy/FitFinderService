@@ -10,6 +10,7 @@ namespace FitFinder.Application.Interface
 		Task<VerifiedUser> VerifyUser(string googleTokenId);
 		Task CreateUser(VerifiedUser user, CancellationToken ct);
 		Task<UserProfile> GetUserProfile(string googleId, CancellationToken ct);
+		Task<UserProfile> GetUserProfile(long userId, CancellationToken ct);
 		Task UpdateUserProfile(long userId, string displayName, string email, string profilePictureUri, CancellationToken ct);
 		IDisposable SubscribeToUserProfile(long userId, Action<UserProfile> callback);
 	}

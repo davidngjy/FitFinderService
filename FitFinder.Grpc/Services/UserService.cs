@@ -69,6 +69,17 @@ namespace FitFinder.Grpc.Services
 		{
 			try
 			{
+				var user = await _userHandler.GetUserProfile(request.Id, context.CancellationToken);
+				await responseStream.WriteAsync(new UserProfile
+				{
+					Id = user.Id,
+					GoogleId = user.GoogleId,
+					DisplayName = user.DisplayName,
+					Email = user.Email,
+					ProfilePictureUri = user.ProfilePictureUri,
+					UserRole = (UserProfile.Types.UserRole) user.UserRole
+				});
+
 				using (_userHandler.SubscribeToUserProfile(request.Id, async user =>
 				{
 					await responseStream.WriteAsync(new UserProfile
