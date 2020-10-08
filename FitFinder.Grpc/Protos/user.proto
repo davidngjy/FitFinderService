@@ -1,7 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "FitFinderService.Proto";
-package fitfinder.proto;
+option csharp_namespace = "FitFinder.Proto";
 
 import "google/protobuf/empty.proto";
 

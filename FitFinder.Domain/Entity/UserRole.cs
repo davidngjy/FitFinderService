@@ -14,7 +14,7 @@ namespace FitFinder.Domain.Entity
 		public UserRoleId UserRoleId { get; set; }
 		public string Name { get; set; }
 
-		public IList<User> Users { get; set; }
+		public ICollection<User> Users { get; set; }
 	}
 
 	public static class Role

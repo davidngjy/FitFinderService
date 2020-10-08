@@ -1,5 +1,5 @@
 using FitFinder.Application.Interface;
-using FitFinderService.Proto;
+using FitFinder.Proto;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;

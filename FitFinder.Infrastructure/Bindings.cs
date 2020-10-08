@@ -18,7 +18,7 @@ namespace FitFinder.Infrastructure
 				.Replace("{pass_word}", configuration.GetValue<string>("sql_password"));
 
 			service.AddDbContext<ApplicationDbContext>(options =>
-				options.UseSqlServer(connectionString));
+				options.UseSqlServer(connectionString, x => x.UseNetTopologySuite()));
 
 			service.AddScoped<IApplicationDbContext>(provider =>
 				provider.GetService<ApplicationDbContext>());

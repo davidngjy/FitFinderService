@@ -1,16 +1,16 @@
-﻿using EntityFrameworkCore.Triggers;
-using FitFinder.Application.Interface;
-using FitFinder.Domain.Common;
+﻿using FitFinder.Application.Interface;
 using FitFinder.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFrameworkCore.Triggers;
+using FitFinder.Domain.Common;
 
 namespace FitFinder.Infrastructure.Persistence
 {
-	public class ApplicationDbContext : DbContextWithTriggers, IApplicationDbContext
+	internal class ApplicationDbContext : DbContextWithTriggers, IApplicationDbContext
 	{
 		private readonly ICurrentUserService _currentUserService;
 
@@ -21,11 +21,19 @@ namespace FitFinder.Infrastructure.Persistence
 		}
 
 		public DbSet<User> Users { get; set; }
-
-		// To generate UserRole table
-		private DbSet<UserRole> UserRoles { get; set; }
+		public DbSet<Session> Sessions { get; set; }
+		public DbSet<Booking> Bookings { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			ConfigureUsers(modelBuilder);
+
+			ConfigureSessions(modelBuilder);
+
+			base.OnModelCreating(modelBuilder);
+		}
+
+		private static void ConfigureUsers(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<User>()
 				.HasIndex(u => u.GoogleId)
@@ -47,6 +55,46 @@ namespace FitFinder.Infrastructure.Persistence
 					}));
 		}
 
+		private static void ConfigureSessions(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<Session>()
+				.HasOne(s => s.TrainerUser)
+				.WithMany(u => u.Sessions)
+				.IsRequired(false);
+
+			modelBuilder.Entity<Session>()
+				.HasOne(s => s.Booking)
+				.WithOne(b => b.Session)
+				.HasForeignKey<Session>(s => s.BookingId)
+				.IsRequired(false);
+
+			modelBuilder.Entity<Booking>()
+				.HasOne(b => b.Session)
+				.WithOne(s => s.Booking)
+				.HasForeignKey<Booking>(b => b.SessionId)
+				.IsRequired();
+
+			modelBuilder.Entity<Booking>()
+				.HasOne(b => b.ClientUser)
+				.WithMany(u => u.Bookings)
+				.HasForeignKey(b => b.ClientUserId)
+				.IsRequired();
+
+			modelBuilder.Entity<Booking>()
+				.Property(b => b.BookingStatusId)
+				.HasDefaultValue(BookingStatusId.Pending);
+
+			// Generate data for BookingStatus table
+			modelBuilder.Entity<BookingStatus>()
+				.HasData(Enum.GetValues(typeof(BookingStatusId))
+					.Cast<BookingStatusId>()
+					.Select(b => new BookingStatus
+					{
+						BookingStatusId = b,
+						Name = b.ToString()
+					}));
+		}
+
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
 		{
 			var currentUserId = _currentUserService.CurrentUserId;
@@ -60,7 +108,7 @@ namespace FitFinder.Infrastructure.Persistence
 				}
 
 				if (entry.State == EntityState.Added ||
-					entry.State == EntityState.Modified)
+				    entry.State == EntityState.Modified)
 				{
 					entry.Entity.LastModifiedByUserId = currentUserId;
 					entry.Entity.LastModifiedUtc = DateTime.UtcNow;

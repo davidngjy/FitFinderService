@@ -8,7 +8,7 @@ namespace FitFinder.Domain.Common
 
 		public DateTime CreatedUtc { get; set; }
 
-		public long LastModifiedByUserId { get; set; }
+		public long? LastModifiedByUserId { get; set; }
 
 		public DateTime? LastModifiedUtc { get; set; }
 	}
