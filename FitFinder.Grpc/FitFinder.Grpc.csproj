@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Protobuf Include="Protos\user.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\session.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>

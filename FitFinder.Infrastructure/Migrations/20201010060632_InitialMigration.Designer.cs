@@ -11,7 +11,7 @@ using NetTopologySuite.Geometries;
 namespace FitFinder.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201010012511_InitialMigration")]
+    [Migration("20201010060632_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
