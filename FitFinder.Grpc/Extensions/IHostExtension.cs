@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using FitFinder.Application.Interface;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using FitFinder.Application.Interface;
 
-namespace FitFinder.Grpc
+namespace FitFinder.Grpc.Extensions
 {
-	public static class Extensions
+	internal static class IHostExtension
 	{
 		public static IHost MigrateDatabase(this IHost host)
 		{

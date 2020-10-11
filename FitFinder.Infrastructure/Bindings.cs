@@ -24,6 +24,7 @@ namespace FitFinder.Infrastructure
 				provider.GetService<ApplicationDbContext>());
 
 			service.AddTransient<IUserSubscription, UserSubscription>();
+			service.AddTransient<ISessionSubscription, SessionSubscription>();
 
 			service.AddDbObservables();
 			service.AddTriggers();

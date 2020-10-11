@@ -1,19 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using FitFinder.Application.Interface;
+using FitFinder.Grpc.Extensions;
 using FitFinder.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Grpc.Core.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace FitFinder.Grpc.Services
 {
 	public class SessionService : SessionProtocol.SessionProtocolBase
 	{
-		public override Task<Empty> AddSession(AddSessionRequest request, ServerCallContext context)
+		private readonly ILogger<SessionService> _logger;
+		private readonly ISessionHandler _sessionHandler;
+
+		public SessionService(ILogger<SessionService> logger, ISessionHandler sessionHandler)
 		{
-			return Task.FromResult(new Empty());
+			_logger = logger;
+			_sessionHandler = sessionHandler;
 		}
 
+		public override async Task<Empty> AddSession(AddSessionRequest request, ServerCallContext context)
+		{
+			var userId = context.GetUserId();
+
+			await _sessionHandler.AddSession(userId, request, context.CancellationToken);
+
+			return new Empty();
+		}
+
+		public override async Task GetUserSessions(Empty request, IServerStreamWriter<UserSession> responseStream, ServerCallContext context)
+		{
+			var userId = context.GetUserId();
+
+			var sessions = await _sessionHandler.GetUserSessions(userId, context.CancellationToken);
+
+			await responseStream.WriteAllAsync(sessions);
+		}
+
+		public override async Task SubscribeToUserSession(Empty request, IServerStreamWriter<UserSession> responseStream, ServerCallContext context)
+		{
+			var userId = context.GetUserId();
+
+			async Task WriteUserSession(UserSession session)
+			{
+				await responseStream.WriteAsync(session);
+			}
+
+			try
+			{
+				using (_sessionHandler.SubscribeToUserSessionInsert(userId, async s => await WriteUserSession(s)))
+				using (_sessionHandler.SubscribeToUserSessionUpdate(userId, async s => await WriteUserSession(s)))
+				{
+					await Task.Delay(-1, context.CancellationToken);
+				}
+			}
+			catch (TaskCanceledException ex)
+			{
+				_logger.LogInformation(ex, "User {userId} stopped subscribing to UserSession", userId);
+			}
+		}
 	}
 }

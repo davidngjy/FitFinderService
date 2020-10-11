@@ -9,6 +9,7 @@ namespace FitFinder.Application
 		public static void RegisterApplication(this IServiceCollection service)
 		{
 			service.AddTransient<IUserHandler, UserHandler>();
+			service.AddTransient<ISessionHandler, SessionHandler>();
 		}
 	}
 }

@@ -30,14 +30,14 @@ namespace FitFinder.Application.Handler
 
 		public async Task CreateUser(VerifiedUser user, CancellationToken ct)
 		{
-			await _context.Users.AddAsync(new User
+			_context.Users.Add(new User
 			{
 				GoogleId = user.GoogleId,
 				DisplayName = user.DisplayName,
 				Email = user.Email,
 				ProfilePictureUri = user.ProfilePictureUri,
 				UserRoleId = UserRoleId.User
-			}, ct);
+			});
 
 			await _context.SaveChangesAsync(ct);
 		}
