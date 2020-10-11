@@ -1,10 +1,10 @@
 using FitFinder.Application.Interface;
-using FitFinder.Proto;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using FitFinder.Protos;
 using Google.Protobuf.WellKnownTypes;
 
 namespace FitFinder.Grpc.Services
@@ -47,15 +47,7 @@ namespace FitFinder.Grpc.Services
 				await responseStream.WriteAsync(new ConnectUserResponse
 				{
 					Status = ConnectUserResponse.Types.Status.Connected,
-					UserProfile = new UserProfile
-					{
-						Id = userProfile.Id,
-						GoogleId = userProfile.GoogleId,
-						DisplayName = userProfile.DisplayName,
-						Email = userProfile.Email,
-						ProfilePictureUri = userProfile.ProfilePictureUri,
-						UserRole = (UserProfile.Types.UserRole)userProfile.UserRole
-					}
+					UserProfile = userProfile
 				});
 			}
 			catch (Exception ex)
@@ -70,28 +62,9 @@ namespace FitFinder.Grpc.Services
 			try
 			{
 				var user = await _userHandler.GetUserProfile(request.Id, context.CancellationToken);
-				await responseStream.WriteAsync(new UserProfile
-				{
-					Id = user.Id,
-					GoogleId = user.GoogleId,
-					DisplayName = user.DisplayName,
-					Email = user.Email,
-					ProfilePictureUri = user.ProfilePictureUri,
-					UserRole = (UserProfile.Types.UserRole) user.UserRole
-				});
+				await responseStream.WriteAsync(user);
 
-				using (_userHandler.SubscribeToUserProfile(request.Id, async user =>
-				{
-					await responseStream.WriteAsync(new UserProfile
-					{
-						Id = user.Id,
-						GoogleId = user.GoogleId,
-						DisplayName = user.DisplayName,
-						Email = user.Email,
-						ProfilePictureUri = user.ProfilePictureUri,
-						UserRole = (UserProfile.Types.UserRole) user.UserRole
-					});
-				}))
+				using (_userHandler.SubscribeToUserProfile(request.Id, async user => await responseStream.WriteAsync(user)))
 					await Task.Delay(-1, context.CancellationToken);
 			}
 			catch (TaskCanceledException ex)
@@ -102,12 +75,7 @@ namespace FitFinder.Grpc.Services
 
 		public override async Task<Empty> UpdateUserProfile(UpdateUserProfileRequest request, ServerCallContext context)
 		{
-			await _userHandler.UpdateUserProfile(
-				request.UserId,
-				request.DisplayName,
-				request.Email,
-				request.ProfilePictureUri, 
-				context.CancellationToken);
+			await _userHandler.UpdateUserProfile(request, context.CancellationToken);
 			return new Empty();
 		}
 	}

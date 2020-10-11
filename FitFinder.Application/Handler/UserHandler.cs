@@ -1,5 +1,4 @@
 ﻿using System;
-using AutoMapper;
 using FitFinder.Application.Interface;
 using FitFinder.Application.Model;
 using FitFinder.Domain.Entity;
@@ -7,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FitFinder.Protos;
 
 namespace FitFinder.Application.Handler
 {
@@ -15,14 +15,12 @@ namespace FitFinder.Application.Handler
 		private readonly IApplicationDbContext _context;
 		private readonly IGoogleGateway _googleGateway;
 		private readonly IUserSubscription _userSubscription;
-		private readonly IMapper _mapper;
 
-		public UserHandler(IApplicationDbContext context, IGoogleGateway googleGateway, IUserSubscription userSubscription, IMapper mapper)
+		public UserHandler(IApplicationDbContext context, IGoogleGateway googleGateway, IUserSubscription userSubscription)
 		{
 			_context = context;
 			_googleGateway = googleGateway;
 			_userSubscription = userSubscription;
-			_mapper = mapper;
 		}
 
 		public Task<VerifiedUser> VerifyUser(string googleTokenId)
@@ -32,8 +30,15 @@ namespace FitFinder.Application.Handler
 
 		public async Task CreateUser(VerifiedUser user, CancellationToken ct)
 		{
-			var userToCreate = _mapper.Map<VerifiedUser, User>(user);
-			await _context.Users.AddAsync(userToCreate, ct);
+			await _context.Users.AddAsync(new User
+			{
+				GoogleId = user.GoogleId,
+				DisplayName = user.DisplayName,
+				Email = user.Email,
+				ProfilePictureUri = user.ProfilePictureUri,
+				UserRoleId = UserRoleId.User
+			}, ct);
+
 			await _context.SaveChangesAsync(ct);
 		}
 
@@ -42,7 +47,18 @@ namespace FitFinder.Application.Handler
 			var user = await _context.Users
 				.Where(u => u.GoogleId == googleId)
 				.FirstOrDefaultAsync(ct);
-			return _mapper.Map<User, UserProfile>(user);
+
+			return user == null 
+				? null 
+				: new UserProfile
+				{
+					Id = user.Id,
+					GoogleId = user.GoogleId,
+					Email = user.Email,
+					DisplayName = user.DisplayName,
+					ProfilePictureUri = user.ProfilePictureUri,
+					UserRole = (UserProfile.Types.UserRole) user.UserRoleId
+				};
 		}
 
 		public async Task<UserProfile> GetUserProfile(long userId, CancellationToken ct)
@@ -50,23 +66,33 @@ namespace FitFinder.Application.Handler
 			var user = await _context.Users
 				.Where(u => u.Id == userId)
 				.FirstOrDefaultAsync(ct);
-			return _mapper.Map<User, UserProfile>(user);
+
+			return user == null
+				? null
+				: new UserProfile
+				{
+					Id = user.Id,
+					GoogleId = user.GoogleId,
+					Email = user.Email,
+					DisplayName = user.DisplayName,
+					ProfilePictureUri = user.ProfilePictureUri,
+					UserRole = (UserProfile.Types.UserRole)user.UserRoleId
+				};
 		}
 
-		public async Task UpdateUserProfile(long userId,
-			string displayName,
-			string email,
-			string profilePictureUri, 
-			CancellationToken ct)
+		public async Task UpdateUserProfile(UpdateUserProfileRequest updateRequest, CancellationToken ct)
 		{
 			var user = await _context
 				.Users
-				.Where(u => u.Id == userId)
+				.Where(u => u.Id == updateRequest.UserId)
 				.FirstOrDefaultAsync(ct);
 
-			user.DisplayName = displayName;
-			user.Email = email;
-			user.ProfilePictureUri = profilePictureUri;
+			if (user == null)
+				return;
+
+			user.DisplayName = updateRequest.DisplayName;
+			user.Email = updateRequest.Email;
+			user.ProfilePictureUri = updateRequest.ProfilePictureUri;
 			await _context.SaveChangesAsync(ct);
 		}
 
@@ -74,7 +100,15 @@ namespace FitFinder.Application.Handler
 		{
 			return _userSubscription.SubscribeToUser(userId, user =>
 			{
-				callback(_mapper.Map<User, UserProfile>(user));
+				callback(new UserProfile
+				{
+					Id = user.Id,
+					GoogleId = user.GoogleId,
+					DisplayName = user.DisplayName,
+					Email = user.Email,
+					ProfilePictureUri = user.ProfilePictureUri,
+					UserRole = (UserProfile.Types.UserRole) user.UserRoleId
+				});
 			});
 		}
 	}

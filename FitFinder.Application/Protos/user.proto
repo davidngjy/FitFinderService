@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "FitFinder.Proto";
+option csharp_namespace = "FitFinder.Protos";
+package fitfinder.proto;
 
 import "google/protobuf/empty.proto";
 
@@ -42,9 +43,10 @@ message UserProfile {
 	UserRole userRole = 6;
 
 	enum UserRole {
-		Admin = 0;
-		Trainer = 1;
-		User = 2;
+		Unknown = 0;
+		Admin = 1;
+		Trainer = 2;
+		User = 3;
 	}
 }
 

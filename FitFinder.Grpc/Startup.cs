@@ -92,6 +92,7 @@ namespace FitFinder.Grpc
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapGrpcService<UserService>();
+				endpoints.MapGrpcService<SessionService>();
 
 				endpoints.MapGet("/", async context =>
 				{

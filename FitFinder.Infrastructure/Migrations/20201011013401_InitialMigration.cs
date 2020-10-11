@@ -46,7 +46,7 @@ namespace FitFinder.Infrastructure.Migrations
                     DisplayName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     ProfilePictureUri = table.Column<string>(nullable: true),
-                    UserRoleId = table.Column<int>(nullable: false, defaultValue: 2)
+                    UserRoleId = table.Column<int>(nullable: false, defaultValue: 3)
                 },
                 constraints: table =>
                 {
@@ -102,7 +102,7 @@ namespace FitFinder.Infrastructure.Migrations
                     CreatedUtc = table.Column<DateTime>(nullable: false),
                     LastModifiedByUserId = table.Column<long>(nullable: true),
                     LastModifiedUtc = table.Column<DateTime>(nullable: true),
-                    BookingStatusId = table.Column<int>(nullable: false, defaultValue: 0),
+                    BookingStatusId = table.Column<int>(nullable: false, defaultValue: 1),
                     ClientUserId = table.Column<long>(nullable: false),
                     SessionId = table.Column<long>(nullable: false)
                 },
@@ -134,9 +134,9 @@ namespace FitFinder.Infrastructure.Migrations
                 columns: new[] { "BookingStatusId", "Name" },
                 values: new object[,]
                 {
-                    { 0, "Pending" },
-                    { 1, "Confirmed" },
-                    { 2, "Cancelled" }
+                    { 1, "Pending" },
+                    { 2, "Confirmed" },
+                    { 3, "Cancelled" }
                 });
 
             migrationBuilder.InsertData(
@@ -144,9 +144,9 @@ namespace FitFinder.Infrastructure.Migrations
                 columns: new[] { "UserRoleId", "Name" },
                 values: new object[,]
                 {
-                    { 0, "Admin" },
-                    { 1, "Trainer" },
-                    { 2, "User" }
+                    { 1, "Admin" },
+                    { 2, "Trainer" },
+                    { 3, "User" }
                 });
 
             migrationBuilder.CreateIndex(

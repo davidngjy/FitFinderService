@@ -29,7 +29,7 @@ namespace FitFinder.Infrastructure.Migrations
 
                     b.Property<int>("BookingStatusId")
                         .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(1);
 
                     b.Property<long>("ClientUserId")
                         .HasColumnType("bigint");
@@ -76,17 +76,17 @@ namespace FitFinder.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            BookingStatusId = 0,
+                            BookingStatusId = 1,
                             Name = "Pending"
                         },
                         new
                         {
-                            BookingStatusId = 1,
+                            BookingStatusId = 2,
                             Name = "Confirmed"
                         },
                         new
                         {
-                            BookingStatusId = 2,
+                            BookingStatusId = 3,
                             Name = "Cancelled"
                         });
                 });
@@ -186,7 +186,7 @@ namespace FitFinder.Infrastructure.Migrations
 
                     b.Property<int>("UserRoleId")
                         .HasColumnType("int")
-                        .HasDefaultValue(2);
+                        .HasDefaultValue(3);
 
                     b.HasKey("Id");
 
@@ -214,17 +214,17 @@ namespace FitFinder.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            UserRoleId = 0,
+                            UserRoleId = 1,
                             Name = "Admin"
                         },
                         new
                         {
-                            UserRoleId = 1,
+                            UserRoleId = 2,
                             Name = "Trainer"
                         },
                         new
                         {
-                            UserRoleId = 2,
+                            UserRoleId = 3,
                             Name = "User"
                         });
                 });

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FitFinder.Application.Model;
+using FitFinder.Protos;
 
 namespace FitFinder.Application.Interface
 {
@@ -11,7 +12,7 @@ namespace FitFinder.Application.Interface
 		Task CreateUser(VerifiedUser user, CancellationToken ct);
 		Task<UserProfile> GetUserProfile(string googleId, CancellationToken ct);
 		Task<UserProfile> GetUserProfile(long userId, CancellationToken ct);
-		Task UpdateUserProfile(long userId, string displayName, string email, string profilePictureUri, CancellationToken ct);
+		Task UpdateUserProfile(UpdateUserProfileRequest updateRequest, CancellationToken ct);
 		IDisposable SubscribeToUserProfile(long userId, Action<UserProfile> callback);
 	}
 }

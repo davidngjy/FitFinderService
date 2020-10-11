@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+option csharp_namespace = "FitFinder.Protos";
+package fitfinder.proto;
+
+import "google/protobuf/duration.proto";  
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+service SessionProtocol {
+	rpc AddSession(AddSessionRequest) returns (google.protobuf.Empty);
+	rpc GetUserSessions(google.protobuf.Empty) returns (UserSessions);
+}
+
+message AddSessionRequest {
+	string title = 1;
+	string description = 2;
+	google.protobuf.Timestamp sessionDateTime = 3;
+	LatLng location = 4;
+	string locationString = 5;
+	bool isOnline = 6;
+	bool isInPerson = 7;
+	double price = 8;
+	google.protobuf.Duration duration = 9;
+}
+
+message UserSessions {
+	repeated UserSession userSessions = 1;
+}
+
+message UserSession {
+	int64 sessionId = 1;
+	int64 trainerUserId = 2;
+	string title = 3;
+	string description = 4;
+	google.protobuf.Timestamp sessionDateTime = 5;
+	LatLng location = 6;
+	string locationString = 7;
+	bool isOnline = 8;
+	bool isInPerson = 9;
+	double price = 10;
+	google.protobuf.Duration duration = 11;
+	google.protobuf.Int64Value bookingId = 12;
+	google.protobuf.Int64Value clientUserId = 13;
+	BookingStatus bookingStatus = 14;
+}
+
+message LatLng {
+	double latitude = 1;
+	double longitude = 2;
+}
+
+enum BookingStatus {
+	Unknown = 0;
+	Pending = 1;
+	Confirmed = 2;
+	Cancelled = 3;
+}

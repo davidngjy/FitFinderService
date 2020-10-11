@@ -18,8 +18,7 @@ namespace FitFinder.Domain.Entity
 
 		public string ProfilePictureUri { get; set; }
 
-		[Required]
-		public UserRoleId UserRoleId { get; set; }
+		public UserRoleId UserRoleId { get; set; } = UserRoleId.User;
 
 		public ICollection<Session> Sessions { get; set; }
 

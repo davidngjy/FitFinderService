@@ -4,9 +4,9 @@ namespace FitFinder.Domain.Entity
 {
 	public enum UserRoleId
 	{
-		Admin = 0,
-		Trainer = 1,
-		User = 2
+		Admin = 1,
+		Trainer = 2,
+		User = 3
 	}
 
 	public class UserRole
