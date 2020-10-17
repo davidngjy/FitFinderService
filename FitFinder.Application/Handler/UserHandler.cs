@@ -80,11 +80,11 @@ namespace FitFinder.Application.Handler
 				};
 		}
 
-		public async Task UpdateUserProfile(UpdateUserProfileRequest updateRequest, CancellationToken ct)
+		public async Task UpdateUserProfile(long userId, UpdateUserProfileRequest updateRequest, CancellationToken ct)
 		{
 			var user = await _context
 				.Users
-				.Where(u => u.Id == updateRequest.UserId)
+				.Where(u => u.Id == userId)
 				.FirstOrDefaultAsync(ct);
 
 			if (user == null)

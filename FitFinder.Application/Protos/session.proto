@@ -3,6 +3,8 @@ syntax = "proto3";
 option csharp_namespace = "FitFinder.Protos";
 package fitfinder.proto;
 
+import "result.proto";
+
 import "google/protobuf/duration.proto";  
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
@@ -10,7 +12,7 @@ import "google/protobuf/empty.proto";
 
 service SessionProtocol {
 	rpc GetUserSessions(google.protobuf.Empty) returns (stream UserSession);
-	rpc AddSession(AddSessionRequest) returns (google.protobuf.Empty);
+	rpc AddSession(AddSessionRequest) returns (Response);
 	rpc SubscribeToUserSession(google.protobuf.Empty) returns (stream UserSession);
 }
 

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option csharp_namespace = "FitFinder.Protos";
+package fitfinder.proto;
+
+message Response {
+	Status resultStatus = 1;
+	enum Status {
+		Success = 0;
+		Failed = 1;
+	}
+}

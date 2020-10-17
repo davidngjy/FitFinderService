@@ -49,28 +49,25 @@ namespace FitFinder.Grpc
 
 			services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-			if (!Environment.IsDevelopment())
+			services.AddAuthentication(o =>
 			{
-				services.AddAuthentication(o =>
-				{
-					o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-					o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-				}).AddJwtBearer(o =>
-				{
-					o.SecurityTokenValidators.Clear();
-					o.SecurityTokenValidators.Add(new GoogleTokenValidator());
-					o.Events = new GoogleTokenEvent();
-				});
+			}).AddJwtBearer(o =>
+			{
+				o.SecurityTokenValidators.Clear();
+				o.SecurityTokenValidators.Add(new GoogleTokenValidator());
+				o.Events = new GoogleTokenEvent();
+			});
 
-				services.AddAuthorization(o =>
-				{
-					o.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-						.RequireAuthenticatedUser()
-						.RequireClaim(ClaimTypes.Role)
-						.Build();
-				});
-			}
+			services.AddAuthorization(o =>
+			{
+				o.FallbackPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+					.RequireAuthenticatedUser()
+					.RequireClaim(ClaimTypes.Role)
+					.Build();
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,11 +80,8 @@ namespace FitFinder.Grpc
 
 			app.UseRouting();
 
-			if (!Environment.IsDevelopment())
-			{
-				app.UseAuthentication();
-				app.UseAuthorization();
-			}
+			app.UseAuthentication();
+			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
 			{

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using FitFinder.Grpc.Extensions;
 using FitFinder.Protos;
 using Google.Protobuf.WellKnownTypes;
 
@@ -57,26 +58,29 @@ namespace FitFinder.Grpc.Services
 			}
 		}
 
-		public override async Task SubscribeToUserProfile(SubscribeUserProfileRequest request, IServerStreamWriter<UserProfile> responseStream, ServerCallContext context)
+		public override async Task SubscribeToUserProfile(Empty request, IServerStreamWriter<UserProfile> responseStream, ServerCallContext context)
 		{
+			var userId = context.GetUserId();
+
 			try
 			{
-				var user = await _userHandler.GetUserProfile(request.Id, context.CancellationToken);
+				var user = await _userHandler.GetUserProfile(userId, context.CancellationToken);
 				await responseStream.WriteAsync(user);
 
-				using (_userHandler.SubscribeToUserProfile(request.Id, async user => await responseStream.WriteAsync(user)))
+				using (_userHandler.SubscribeToUserProfile(userId, async u => await responseStream.WriteAsync(u)))
 					await Task.Delay(-1, context.CancellationToken);
 			}
 			catch (TaskCanceledException ex)
 			{
-				_logger.LogInformation(ex , "User {id} stopped subscribing to UserProfile", request.Id);
+				_logger.LogInformation(ex , "User {userId} stopped subscribing to UserProfile", userId);
 			}
 		}
 
-		public override async Task<Empty> UpdateUserProfile(UpdateUserProfileRequest request, ServerCallContext context)
+		public override async Task<Response> UpdateUserProfile(UpdateUserProfileRequest request, ServerCallContext context)
 		{
-			await _userHandler.UpdateUserProfile(request, context.CancellationToken);
-			return new Empty();
+			var userId = context.GetUserId();
+			await _userHandler.UpdateUserProfile(userId, request, context.CancellationToken);
+			return new Response {ResultStatus = Response.Types.Status.Success};
 		}
 	}
 }

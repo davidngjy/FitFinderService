@@ -3,12 +3,14 @@ syntax = "proto3";
 option csharp_namespace = "FitFinder.Protos";
 package fitfinder.proto;
 
+import "result.proto";
+
 import "google/protobuf/empty.proto";
 
 service UserProtocol {
 	rpc ConnectUser(ConnectUserRequest) returns (stream ConnectUserResponse);
-	rpc SubscribeToUserProfile(SubscribeUserProfileRequest) returns (stream UserProfile);
-	rpc UpdateUserProfile(UpdateUserProfileRequest) returns (google.protobuf.Empty);
+	rpc SubscribeToUserProfile(google.protobuf.Empty) returns (stream UserProfile);
+	rpc UpdateUserProfile(UpdateUserProfileRequest) returns (Response);
 }
 
 message ConnectUserRequest {
@@ -28,10 +30,9 @@ message ConnectUserResponse {
 }
 
 message UpdateUserProfileRequest {
-	int64 userId = 1;
-	string displayName = 2;
-	string email = 3;
-	string profilePictureUri = 4;
+	string displayName = 1;
+	string email = 2;
+	string profilePictureUri = 3;
 }
 
 message UserProfile {
@@ -48,8 +49,4 @@ message UserProfile {
 		Trainer = 2;
 		User = 3;
 	}
-}
-
-message SubscribeUserProfileRequest {
-	int64 id = 1;
 }

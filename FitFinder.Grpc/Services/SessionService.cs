@@ -20,13 +20,13 @@ namespace FitFinder.Grpc.Services
 			_sessionHandler = sessionHandler;
 		}
 
-		public override async Task<Empty> AddSession(AddSessionRequest request, ServerCallContext context)
+		public override async Task<Response> AddSession(AddSessionRequest request, ServerCallContext context)
 		{
 			var userId = context.GetUserId();
 
 			await _sessionHandler.AddSession(userId, request, context.CancellationToken);
 
-			return new Empty();
+			return new Response {ResultStatus = Response.Types.Status.Success};
 		}
 
 		public override async Task GetUserSessions(Empty request, IServerStreamWriter<UserSession> responseStream, ServerCallContext context)
