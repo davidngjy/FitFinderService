@@ -23,6 +23,30 @@ namespace FitFinder.Application.Handler
 			_sessionSubscription = sessionSubscription;
 		}
 
+		public async Task<IEnumerable<UserSession>> GetAvailableSession(CancellationToken ct)
+		{
+			var sessions = await _context
+				.Sessions
+				.Where(s => s.BookingId == null && s.SessionDateTime >= DateTime.UtcNow)
+				.ToListAsync(ct);
+
+			return sessions
+				.Select(s => new UserSession
+				{
+					SessionId = s.Id,
+					TrainerUserId = s.TrainerUserId,
+					Title = s.Title,
+					Description = s.Description,
+					SessionDateTime = s.SessionDateTime.ToUniversalTime().ToTimestamp(),
+					Location = new LatLng { Longitude = s.Location.X, Latitude = s.Location.Y },
+					LocationString = s.LocationString,
+					IsOnline = s.IsOnline,
+					IsInPerson = s.IsInPerson,
+					Price = s.Price,
+					Duration = s.Duration.ToDuration()
+				});
+		}
+
 		public async Task<IEnumerable<UserSession>> GetUserSessions(long userId, CancellationToken ct)
 		{
 			var sessions = await _context
@@ -71,7 +95,7 @@ namespace FitFinder.Application.Handler
 			await _context.SaveChangesAsync(ct);
 		}
 
-		public async Task EditSession(EditSessionRequest request, CancellationToken ct)
+		public async Task<bool> EditSession(EditSessionRequest request, CancellationToken ct)
 		{
 			var session = await _context
 				.Sessions
@@ -79,7 +103,7 @@ namespace FitFinder.Application.Handler
 				.FirstOrDefaultAsync(ct);
 
 			if (session == null)
-				return;
+				return false;
 
 			session.Title = request.Title;
 			session.Description = request.Description;
@@ -92,6 +116,7 @@ namespace FitFinder.Application.Handler
 			session.Duration = request.Duration.ToTimeSpan();
 
 			await _context.SaveChangesAsync(ct);
+			return true;
 		}
 
 		public IDisposable SubscribeToUserSessionInsert(long userId, Action<UserSession> callback)
@@ -124,6 +149,44 @@ namespace FitFinder.Application.Handler
 					Description = s.Description,
 					SessionDateTime = s.SessionDateTime.ToTimestamp(),
 					Location = new LatLng {Longitude = s.Location.X, Latitude = s.Location.Y},
+					LocationString = s.LocationString,
+					IsOnline = s.IsOnline,
+					IsInPerson = s.IsInPerson,
+					Price = s.Price,
+					Duration = s.Duration.ToDuration()
+				}));
+		}
+
+		public IDisposable SubscribeToSessionInsert(Action<UserSession> callback)
+		{
+			return _sessionSubscription
+				.SubscribeToSessionInsert(s => callback(new UserSession
+				{
+					SessionId = s.Id,
+					TrainerUserId = s.TrainerUserId,
+					Title = s.Title,
+					Description = s.Description,
+					SessionDateTime = s.SessionDateTime.ToTimestamp(),
+					Location = new LatLng { Longitude = s.Location.X, Latitude = s.Location.Y },
+					LocationString = s.LocationString,
+					IsOnline = s.IsOnline,
+					IsInPerson = s.IsInPerson,
+					Price = s.Price,
+					Duration = s.Duration.ToDuration()
+				}));
+		}
+
+		public IDisposable SubscribeToSessionUpdate(Action<UserSession> callback)
+		{
+			return _sessionSubscription
+				.SubscribeToSessionUpdate(s => callback(new UserSession
+				{
+					SessionId = s.Id,
+					TrainerUserId = s.TrainerUserId,
+					Title = s.Title,
+					Description = s.Description,
+					SessionDateTime = s.SessionDateTime.ToTimestamp(),
+					Location = new LatLng { Longitude = s.Location.X, Latitude = s.Location.Y },
 					LocationString = s.LocationString,
 					IsOnline = s.IsOnline,
 					IsInPerson = s.IsInPerson,

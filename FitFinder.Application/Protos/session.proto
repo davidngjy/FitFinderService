@@ -11,9 +11,10 @@ import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
 
 service SessionProtocol {
-	rpc GetUserSessions(google.protobuf.Empty) returns (stream UserSession);
 	rpc AddSession(AddSessionRequest) returns (Response);
+    rpc EditSession(EditSessionRequest) returns (Response);
 	rpc SubscribeToUserSession(google.protobuf.Empty) returns (stream UserSession);
+	rpc SubscribeToAvailableSessions(google.protobuf.Empty) returns (stream UserSession);
 }
 
 message AddSessionRequest {
