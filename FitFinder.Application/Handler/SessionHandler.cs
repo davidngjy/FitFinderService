@@ -23,11 +23,16 @@ namespace FitFinder.Application.Handler
 			_sessionSubscription = sessionSubscription;
 		}
 
-		public async Task<IEnumerable<UserSession>> GetAvailableSession(CancellationToken ct)
+		public async Task<IEnumerable<UserSession>> GetAvailableSessionByRegion(Region region, CancellationToken ct)
 		{
 			var sessions = await _context
 				.Sessions
-				.Where(s => s.BookingId == null && s.SessionDateTime >= DateTime.UtcNow)
+				.Include(s => s.Booking)
+				.Where(s => s.Location.X <= region.NorthEastBound.Longitude
+				            && s.Location.X >= region.SouthWestBound.Longitude
+				            && s.Location.Y <= region.NorthEastBound.Latitude
+				            && s.Location.Y >= region.SouthWestBound.Latitude
+				            && s.BookingId == null)
 				.ToListAsync(ct);
 
 			return sessions
@@ -43,8 +48,37 @@ namespace FitFinder.Application.Handler
 					IsOnline = s.IsOnline,
 					IsInPerson = s.IsInPerson,
 					Price = s.Price,
-					Duration = s.Duration.ToDuration()
+					Duration = s.Duration.ToDuration(),
+					BookingId = s.BookingId,
+					ClientUserId = s.Booking?.ClientUserId,
+					BookingStatus = (Protos.BookingStatus)(s.Booking?.BookingStatusId ?? 0)
 				});
+		}
+
+		public async Task<UserSession> GetSession(long sessionId, CancellationToken ct)
+		{
+			var session = await _context
+				.Sessions
+				.Where(s => s.Id == sessionId)
+				.FirstOrDefaultAsync(ct);
+
+			return new UserSession
+			{
+				SessionId = session.Id,
+				TrainerUserId = session.TrainerUserId,
+				Title = session.Title,
+				Description = session.Description,
+				SessionDateTime = session.SessionDateTime.ToUniversalTime().ToTimestamp(),
+				Location = new LatLng {Longitude = session.Location.X, Latitude = session.Location.Y},
+				LocationString = session.LocationString,
+				IsOnline = session.IsOnline,
+				IsInPerson = session.IsInPerson,
+				Price = session.Price,
+				Duration = session.Duration.ToDuration(),
+				BookingId = session.BookingId,
+				ClientUserId = session.Booking?.ClientUserId,
+				BookingStatus = (Protos.BookingStatus) (session.Booking?.BookingStatusId ?? 0)
+			};
 		}
 
 		public async Task<IEnumerable<UserSession>> GetUserSessions(long userId, CancellationToken ct)
@@ -149,44 +183,6 @@ namespace FitFinder.Application.Handler
 					Description = s.Description,
 					SessionDateTime = s.SessionDateTime.ToTimestamp(),
 					Location = new LatLng {Longitude = s.Location.X, Latitude = s.Location.Y},
-					LocationString = s.LocationString,
-					IsOnline = s.IsOnline,
-					IsInPerson = s.IsInPerson,
-					Price = s.Price,
-					Duration = s.Duration.ToDuration()
-				}));
-		}
-
-		public IDisposable SubscribeToSessionInsert(Action<UserSession> callback)
-		{
-			return _sessionSubscription
-				.SubscribeToSessionInsert(s => callback(new UserSession
-				{
-					SessionId = s.Id,
-					TrainerUserId = s.TrainerUserId,
-					Title = s.Title,
-					Description = s.Description,
-					SessionDateTime = s.SessionDateTime.ToTimestamp(),
-					Location = new LatLng { Longitude = s.Location.X, Latitude = s.Location.Y },
-					LocationString = s.LocationString,
-					IsOnline = s.IsOnline,
-					IsInPerson = s.IsInPerson,
-					Price = s.Price,
-					Duration = s.Duration.ToDuration()
-				}));
-		}
-
-		public IDisposable SubscribeToSessionUpdate(Action<UserSession> callback)
-		{
-			return _sessionSubscription
-				.SubscribeToSessionUpdate(s => callback(new UserSession
-				{
-					SessionId = s.Id,
-					TrainerUserId = s.TrainerUserId,
-					Title = s.Title,
-					Description = s.Description,
-					SessionDateTime = s.SessionDateTime.ToTimestamp(),
-					Location = new LatLng { Longitude = s.Location.X, Latitude = s.Location.Y },
 					LocationString = s.LocationString,
 					IsOnline = s.IsOnline,
 					IsInPerson = s.IsInPerson,

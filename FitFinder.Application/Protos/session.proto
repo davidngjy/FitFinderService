@@ -11,22 +11,31 @@ import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
 
 service SessionProtocol {
-	rpc AddSession(AddSessionRequest) returns (Response);
+    rpc GetAvailableSessionsByRegion(Region) returns (stream UserSessions);
+	rpc GetSession(SessionRequest) returns (UserSession);
+    rpc AddSession(AddSessionRequest) returns (Response);
     rpc EditSession(EditSessionRequest) returns (Response);
-	rpc SubscribeToUserSession(google.protobuf.Empty) returns (stream UserSession);
-	rpc SubscribeToAvailableSessions(google.protobuf.Empty) returns (stream UserSession);
+    rpc SubscribeToUserSession(google.protobuf.Empty) returns (stream UserSession);
+}
+
+message SessionRequest {
+	int64 sessionId = 1;
 }
 
 message AddSessionRequest {
-	string title = 1;
-	string description = 2;
-	google.protobuf.Timestamp sessionDateTime = 3;
-	LatLng location = 4;
-	string locationString = 5;
-	bool isOnline = 6;
-	bool isInPerson = 7;
-	double price = 8;
-	google.protobuf.Duration duration = 9;
+    string title = 1;
+    string description = 2;
+    google.protobuf.Timestamp sessionDateTime = 3;
+    LatLng location = 4;
+    string locationString = 5;
+    bool isOnline = 6;
+    bool isInPerson = 7;
+    double price = 8;
+    google.protobuf.Duration duration = 9;
+}
+
+message UserSessions {
+    repeated UserSession sessions = 1;
 }
 
 message UserSession {
@@ -58,6 +67,11 @@ message EditSessionRequest {
 	double price = 9;
 	google.protobuf.Duration duration = 10;
 	int64 trainerUserId = 11;
+}
+
+message Region {
+	LatLng northEastBound = 1;
+	LatLng southWestBound = 2;
 }
 
 message LatLng {

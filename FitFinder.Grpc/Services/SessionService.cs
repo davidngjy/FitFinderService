@@ -21,6 +21,17 @@ namespace FitFinder.Grpc.Services
 			_sessionHandler = sessionHandler;
 		}
 
+		public override async Task GetAvailableSessionsByRegion(Region request, IServerStreamWriter<UserSessions> responseStream, ServerCallContext context)
+		{
+			var sessions = await _sessionHandler.GetAvailableSessionByRegion(request, context.CancellationToken);
+			await responseStream.WriteAsync(new UserSessions {Sessions = {sessions}});
+		}
+
+		public override Task<UserSession> GetSession(SessionRequest request, ServerCallContext context)
+		{
+			return _sessionHandler.GetSession(request.SessionId, context.CancellationToken);
+		}
+
 		public override async Task<Response> AddSession(AddSessionRequest request, ServerCallContext context)
 		{
 			var userId = context.GetUserId();
@@ -67,31 +78,6 @@ namespace FitFinder.Grpc.Services
 			catch (TaskCanceledException ex)
 			{
 				_logger.LogInformation(ex, "User {userId} stopped subscribing to UserSession", userId);
-			}
-		}
-
-		public override async Task SubscribeToAvailableSessions(Empty request, IServerStreamWriter<UserSession> responseStream, ServerCallContext context)
-		{
-			var sessions = await _sessionHandler.GetAvailableSession(context.CancellationToken);
-
-			await responseStream.WriteAllAsync(sessions);
-
-			async Task WriteUserSession(UserSession session)
-			{
-				await responseStream.WriteAsync(session);
-			}
-
-			try
-			{
-				using (_sessionHandler.SubscribeToSessionInsert(async s => await WriteUserSession(s)))
-				using (_sessionHandler.SubscribeToSessionUpdate(async s => await WriteUserSession(s)))
-				{
-					await Task.Delay(-1, context.CancellationToken);
-				}
-			}
-			catch (TaskCanceledException ex)
-			{
-				_logger.LogInformation(ex, "User {userId} stopped subscribing to available sessions", context.GetUserId());
 			}
 		}
 	}
