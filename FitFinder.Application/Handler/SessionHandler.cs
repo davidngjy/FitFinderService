@@ -153,6 +153,28 @@ namespace FitFinder.Application.Handler
 			return true;
 		}
 
+		public async Task BookSession(long sessionId, long userId, CancellationToken ct)
+		{
+			var session = await _context
+				.Sessions
+				.Include(s => s.Booking)
+				.Where(s => s.Id == sessionId)
+				.FirstAsync(ct);
+
+			if (session.BookingId != null)
+				throw new InvalidOperationException($"Session has been booked! SessionId:{sessionId} userId:{userId}");
+
+			var booking = new Booking
+			{
+				SessionId = sessionId,
+				ClientUserId = userId,
+				BookingStatusId = BookingStatusId.Pending
+			};
+
+			_context.Bookings.Add(booking);
+			await _context.SaveChangesAsync(ct);
+		}
+
 		public IDisposable SubscribeToUserSessionInsert(long userId, Action<UserSession> callback)
 		{
 			return _sessionSubscription

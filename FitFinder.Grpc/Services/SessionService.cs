@@ -54,6 +54,15 @@ namespace FitFinder.Grpc.Services
 				: new Response { ResultStatus = Response.Types.Status.Failed };
 		}
 
+		public override async Task<Response> BookSession(BookSessionRequest request, ServerCallContext context)
+		{
+			var userId = context.GetUserId();
+
+			await _sessionHandler.BookSession(request.SessionId, userId, context.CancellationToken);
+
+			return new Response {ResultStatus = Response.Types.Status.Success};
+		}
+
 		public override async Task SubscribeToUserSession(Empty request, IServerStreamWriter<UserSession> responseStream, ServerCallContext context)
 		{
 			var userId = context.GetUserId();
