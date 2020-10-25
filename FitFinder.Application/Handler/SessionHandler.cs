@@ -109,6 +109,34 @@ namespace FitFinder.Application.Handler
 				});
 		}
 
+		public async Task<IEnumerable<UserSession>> GetUserBookingSession(long userId, CancellationToken ct)
+		{
+			var sessions = await _context
+				.Sessions
+				.Include(s => s.Booking)
+				.Where(s => s.Booking != null && (s.TrainerUserId == userId || s.Booking.ClientUserId == userId))
+				.ToListAsync(ct);
+
+			return sessions
+				.Select(s => new UserSession
+				{
+					SessionId = s.SessionId,
+					TrainerUserId = s.TrainerUserId,
+					Title = s.Title,
+					Description = s.Description,
+					SessionDateTime = s.SessionDateTime.ToUniversalTime().ToTimestamp(),
+					Location = new LatLng { Longitude = s.Location.X, Latitude = s.Location.Y },
+					LocationString = s.LocationString,
+					IsOnline = s.IsOnline,
+					IsInPerson = s.IsInPerson,
+					Price = s.Price,
+					Duration = s.Duration.ToDuration(),
+					BookingId = s.Booking?.BookingId,
+					ClientUserId = s.Booking?.ClientUserId,
+					BookingStatus = (Protos.BookingStatus)(s.Booking?.BookingStatusId ?? 0)
+				});
+		}
+
 		public async Task AddSession(long userId, AddSessionRequest request, CancellationToken ct)
 		{
 			var newSession = new Session
@@ -211,6 +239,74 @@ namespace FitFinder.Application.Handler
 					Price = s.Price,
 					Duration = s.Duration.ToDuration()
 				}));
+		}
+
+		public IDisposable SubscribeToSessionBookingInsert(long userId, Action<UserSession> callback, CancellationToken ct)
+		{
+			return _sessionSubscription
+				.SubscribeToSessionBookingInsert(async b =>
+				{
+					var session = await _context
+						.Sessions
+						.Include(s => s.Booking)
+						.Where(s => s.SessionId == b.SessionId)
+						.FirstAsync(ct);
+
+					if (session.TrainerUserId != userId && session.Booking.ClientUserId != userId)
+						return;
+
+					callback(new UserSession
+					{
+						SessionId = session.SessionId,
+						TrainerUserId = session.TrainerUserId,
+						Title = session.Title,
+						Description = session.Description,
+						SessionDateTime = session.SessionDateTime.ToUniversalTime().ToTimestamp(),
+						Location = new LatLng {Longitude = session.Location.X, Latitude = session.Location.Y},
+						LocationString = session.LocationString,
+						IsOnline = session.IsOnline,
+						IsInPerson = session.IsInPerson,
+						Price = session.Price,
+						Duration = session.Duration.ToDuration(),
+						BookingId = session.Booking?.BookingId,
+						ClientUserId = session.Booking?.ClientUserId,
+						BookingStatus = (Protos.BookingStatus) (session.Booking?.BookingStatusId ?? 0)
+					});
+				});
+		}
+
+		public IDisposable SubscribeToSessionBookingUpdate(long userId, Action<UserSession> callback, CancellationToken ct)
+		{
+			return _sessionSubscription
+				.SubscribeToSessionBookingUpdate(async b =>
+				{
+					var session = await _context
+						.Sessions
+						.Include(s => s.Booking)
+						.Where(s => s.SessionId == b.SessionId)
+						.FirstAsync(ct);
+
+					if (session.TrainerUserId != userId && session.Booking.ClientUserId != userId)
+						return;
+
+					callback(new UserSession
+					{
+						SessionId = session.SessionId,
+						TrainerUserId = session.TrainerUserId,
+						Title = session.Title,
+						Description = session.Description,
+						SessionDateTime = session.SessionDateTime.ToUniversalTime().ToTimestamp(),
+						Location = new LatLng { Longitude = session.Location.X, Latitude = session.Location.Y },
+						LocationString = session.LocationString,
+						IsOnline = session.IsOnline,
+						IsInPerson = session.IsInPerson,
+						Price = session.Price,
+						Duration = session.Duration.ToDuration(),
+						BookingId = session.Booking?.BookingId,
+						ClientUserId = session.Booking?.ClientUserId,
+						BookingStatus = (Protos.BookingStatus)(session.Booking?.BookingStatusId ?? 0)
+					});
+				});
 		}
 	}
 }

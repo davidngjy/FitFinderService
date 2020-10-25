@@ -7,5 +7,7 @@ namespace FitFinder.Application.Interface
 	{
 		IDisposable SubscribeToUserSessionInsert(long userId, Action<Session> callback);
 		IDisposable SubscribeToUserSessionUpdate(long userId, Action<Session> callback);
+		IDisposable SubscribeToSessionBookingInsert(Action<Booking> callback);
+		IDisposable SubscribeToSessionBookingUpdate(Action<Booking> callback);
 	}
 }

@@ -23,5 +23,19 @@ namespace FitFinder.Infrastructure.Subscription
 				.Where(s => s.Entity.TrainerUserId == userId)
 				.Subscribe(s => callback(s.Entity));
 		}
+
+		public IDisposable SubscribeToSessionBookingInsert(Action<Booking> callback)
+		{
+			return DbObservable<Booking>
+				.FromInserted()
+				.Subscribe(b => callback(b.Entity));
+		}
+
+		public IDisposable SubscribeToSessionBookingUpdate(Action<Booking> callback)
+		{
+			return DbObservable<Booking>
+				.FromUpdated()
+				.Subscribe(b => callback(b.Entity));
+		}
 	}
 }
