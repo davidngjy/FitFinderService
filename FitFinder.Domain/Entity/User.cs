@@ -7,7 +7,7 @@ namespace FitFinder.Domain.Entity
 	public class User : AuditableEntity
 	{
 		[Key]
-		public long Id { get; set; }
+		public long UserId { get; set; }
 
 		[Required]
 		public string GoogleId { get; set; }

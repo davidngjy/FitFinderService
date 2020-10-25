@@ -32,13 +32,13 @@ namespace FitFinder.Application.Handler
 				            && s.Location.X >= region.SouthWestBound.Longitude
 				            && s.Location.Y <= region.NorthEastBound.Latitude
 				            && s.Location.Y >= region.SouthWestBound.Latitude
-				            && s.BookingId == null)
+				            && s.Booking == null)
 				.ToListAsync(ct);
 
 			return sessions
 				.Select(s => new UserSession
 				{
-					SessionId = s.Id,
+					SessionId = s.SessionId,
 					TrainerUserId = s.TrainerUserId,
 					Title = s.Title,
 					Description = s.Description,
@@ -49,9 +49,9 @@ namespace FitFinder.Application.Handler
 					IsInPerson = s.IsInPerson,
 					Price = s.Price,
 					Duration = s.Duration.ToDuration(),
-					BookingId = s.BookingId,
-					ClientUserId = s.Booking?.ClientUserId,
-					BookingStatus = (Protos.BookingStatus)(s.Booking?.BookingStatusId ?? 0)
+					BookingId = null,
+					ClientUserId = null,
+					BookingStatus = Protos.BookingStatus.Unknown
 				});
 		}
 
@@ -59,12 +59,12 @@ namespace FitFinder.Application.Handler
 		{
 			var session = await _context
 				.Sessions
-				.Where(s => s.Id == sessionId)
+				.Where(s => s.SessionId == sessionId)
 				.FirstOrDefaultAsync(ct);
 
 			return new UserSession
 			{
-				SessionId = session.Id,
+				SessionId = session.SessionId,
 				TrainerUserId = session.TrainerUserId,
 				Title = session.Title,
 				Description = session.Description,
@@ -75,7 +75,7 @@ namespace FitFinder.Application.Handler
 				IsInPerson = session.IsInPerson,
 				Price = session.Price,
 				Duration = session.Duration.ToDuration(),
-				BookingId = session.BookingId,
+				BookingId = session.Booking?.BookingId,
 				ClientUserId = session.Booking?.ClientUserId,
 				BookingStatus = (Protos.BookingStatus) (session.Booking?.BookingStatusId ?? 0)
 			};
@@ -92,7 +92,7 @@ namespace FitFinder.Application.Handler
 			return sessions
 				.Select(s => new UserSession
 				{
-					SessionId = s.Id,
+					SessionId = s.SessionId,
 					TrainerUserId = s.TrainerUserId,
 					Title = s.Title,
 					Description = s.Description,
@@ -103,7 +103,7 @@ namespace FitFinder.Application.Handler
 					IsInPerson = s.IsInPerson,
 					Price = s.Price,
 					Duration = s.Duration.ToDuration(),
-					BookingId = s.BookingId,
+					BookingId = s.Booking?.BookingId,
 					ClientUserId = s.Booking?.ClientUserId,
 					BookingStatus = (Protos.BookingStatus)(s.Booking?.BookingStatusId ?? 0)
 				});
@@ -133,7 +133,7 @@ namespace FitFinder.Application.Handler
 		{
 			var session = await _context
 				.Sessions
-				.Where(s => s.Id == request.SessionId)
+				.Where(s => s.SessionId == request.SessionId)
 				.FirstOrDefaultAsync(ct);
 
 			if (session == null)
@@ -158,10 +158,10 @@ namespace FitFinder.Application.Handler
 			var session = await _context
 				.Sessions
 				.Include(s => s.Booking)
-				.Where(s => s.Id == sessionId)
+				.Where(s => s.SessionId == sessionId)
 				.FirstAsync(ct);
 
-			if (session.BookingId != null)
+			if (session.Booking != null)
 				throw new InvalidOperationException($"Session has been booked! SessionId:{sessionId} userId:{userId}");
 
 			var booking = new Booking
@@ -180,7 +180,7 @@ namespace FitFinder.Application.Handler
 			return _sessionSubscription
 				.SubscribeToUserSessionInsert(userId, s => callback(new UserSession
 				{
-					SessionId = s.Id,
+					SessionId = s.SessionId,
 					TrainerUserId = s.TrainerUserId,
 					Title = s.Title,
 					Description = s.Description,
@@ -199,7 +199,7 @@ namespace FitFinder.Application.Handler
 			return _sessionSubscription
 				.SubscribeToUserSessionUpdate(userId, s => callback(new UserSession
 				{
-					SessionId = s.Id,
+					SessionId = s.SessionId,
 					TrainerUserId = s.TrainerUserId,
 					Title = s.Title,
 					Description = s.Description,

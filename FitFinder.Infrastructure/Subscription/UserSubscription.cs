@@ -12,7 +12,7 @@ namespace FitFinder.Infrastructure.Subscription
 		{
 			return DbObservable<User>
 				.FromUpdated()
-				.Where(u => u.Entity.Id == userId)
+				.Where(u => u.Entity.UserId == userId)
 				.Subscribe(entry => callback(entry.Entity));
 		}
 	}

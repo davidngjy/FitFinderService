@@ -25,7 +25,7 @@ namespace FitFinder.Grpc.Authentication
 				var claims = new List<Claim>
 				{
 					new Claim(ClaimTypes.Role, user.UserRoleId.ToString()),
-					new Claim("UserId", user.Id.ToString())
+					new Claim("UserId", user.UserId.ToString())
 				};
 				var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
 				context.Principal.AddIdentity(identity);

@@ -6,7 +6,7 @@ namespace FitFinder.Domain.Entity
 	public class Booking : AuditableEntity
 	{
 		[Key]
-		public long Id { get; set; }
+		public long BookingId { get; set; }
 
 		[Required]
 		public BookingStatusId BookingStatusId { get; set; }

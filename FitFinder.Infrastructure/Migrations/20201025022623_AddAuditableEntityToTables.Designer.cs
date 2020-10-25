@@ -11,8 +11,8 @@ using NetTopologySuite.Geometries;
 namespace FitFinder.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201011013401_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20201025022623_AddAuditableEntityToTables")]
+    partial class AddAuditableEntityToTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace FitFinder.Infrastructure.Migrations
 
             modelBuilder.Entity("FitFinder.Domain.Entity.Booking", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("BookingId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -51,7 +51,7 @@ namespace FitFinder.Infrastructure.Migrations
                     b.Property<long>("SessionId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Id");
+                    b.HasKey("BookingId");
 
                     b.HasIndex("BookingStatusId");
 
@@ -95,13 +95,10 @@ namespace FitFinder.Infrastructure.Migrations
 
             modelBuilder.Entity("FitFinder.Domain.Entity.Session", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("SessionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long?>("BookingId")
-                        .HasColumnType("bigint");
 
                     b.Property<long>("CreatedByUserId")
                         .HasColumnType("bigint");
@@ -147,7 +144,7 @@ namespace FitFinder.Infrastructure.Migrations
                     b.Property<long>("TrainerUserId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Id");
+                    b.HasKey("SessionId");
 
                     b.HasIndex("TrainerUserId");
 
@@ -156,7 +153,7 @@ namespace FitFinder.Infrastructure.Migrations
 
             modelBuilder.Entity("FitFinder.Domain.Entity.User", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -190,7 +187,7 @@ namespace FitFinder.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(3);
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.HasIndex("GoogleId")
                         .IsUnique()

@@ -52,7 +52,7 @@ namespace FitFinder.Application.Handler
 				? null 
 				: new UserProfile
 				{
-					Id = user.Id,
+					Id = user.UserId,
 					GoogleId = user.GoogleId,
 					Email = user.Email,
 					DisplayName = user.DisplayName,
@@ -64,14 +64,14 @@ namespace FitFinder.Application.Handler
 		public async Task<UserProfile> GetUserProfile(long userId, CancellationToken ct)
 		{
 			var user = await _context.Users
-				.Where(u => u.Id == userId)
+				.Where(u => u.UserId == userId)
 				.FirstOrDefaultAsync(ct);
 
 			return user == null
 				? null
 				: new UserProfile
 				{
-					Id = user.Id,
+					Id = user.UserId,
 					GoogleId = user.GoogleId,
 					Email = user.Email,
 					DisplayName = user.DisplayName,
@@ -84,7 +84,7 @@ namespace FitFinder.Application.Handler
 		{
 			var user = await _context
 				.Users
-				.Where(u => u.Id == userId)
+				.Where(u => u.UserId == userId)
 				.FirstOrDefaultAsync(ct);
 
 			if (user == null)
@@ -102,7 +102,7 @@ namespace FitFinder.Application.Handler
 			{
 				callback(new UserProfile
 				{
-					Id = user.Id,
+					Id = user.UserId,
 					GoogleId = user.GoogleId,
 					DisplayName = user.DisplayName,
 					Email = user.Email,

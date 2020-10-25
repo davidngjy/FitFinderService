@@ -65,7 +65,6 @@ namespace FitFinder.Infrastructure.Persistence
 			modelBuilder.Entity<Session>()
 				.HasOne(s => s.Booking)
 				.WithOne(b => b.Session)
-				.HasForeignKey<Session>(s => s.BookingId)
 				.IsRequired(false);
 
 			modelBuilder.Entity<Booking>()

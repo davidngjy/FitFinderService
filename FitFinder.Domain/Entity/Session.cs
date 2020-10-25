@@ -8,7 +8,7 @@ namespace FitFinder.Domain.Entity
 	public class Session : AuditableEntity
 	{
 		[Key]
-		public long Id { get; set; }
+		public long SessionId { get; set; }
 
 		[Required]
 		public string Title { get; set; }
@@ -35,7 +35,6 @@ namespace FitFinder.Domain.Entity
 		public long TrainerUserId { get; set; }
 		public User TrainerUser { get; set; }
 
-		public long? BookingId { get; set; }
 		public Booking Booking { get; set; }
 	}
 }

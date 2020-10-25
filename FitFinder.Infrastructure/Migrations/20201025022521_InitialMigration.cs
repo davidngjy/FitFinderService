@@ -36,12 +36,8 @@ namespace FitFinder.Infrastructure.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
+                    UserId = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedByUserId = table.Column<long>(nullable: false),
-                    CreatedUtc = table.Column<DateTime>(nullable: false),
-                    LastModifiedByUserId = table.Column<long>(nullable: true),
-                    LastModifiedUtc = table.Column<DateTime>(nullable: true),
                     GoogleId = table.Column<string>(nullable: false),
                     DisplayName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
@@ -50,7 +46,7 @@ namespace FitFinder.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_Users_UserRole_UserRoleId",
                         column: x => x.UserRoleId,
@@ -63,12 +59,8 @@ namespace FitFinder.Infrastructure.Migrations
                 name: "Sessions",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
+                    SessionId = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedByUserId = table.Column<long>(nullable: false),
-                    CreatedUtc = table.Column<DateTime>(nullable: false),
-                    LastModifiedByUserId = table.Column<long>(nullable: true),
-                    LastModifiedUtc = table.Column<DateTime>(nullable: true),
                     Title = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     SessionDateTime = table.Column<DateTime>(nullable: false),
@@ -78,17 +70,16 @@ namespace FitFinder.Infrastructure.Migrations
                     IsInPerson = table.Column<bool>(nullable: false),
                     Price = table.Column<double>(nullable: false),
                     Duration = table.Column<TimeSpan>(nullable: false),
-                    TrainerUserId = table.Column<long>(nullable: false),
-                    BookingId = table.Column<long>(nullable: true)
+                    TrainerUserId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sessions", x => x.Id);
+                    table.PrimaryKey("PK_Sessions", x => x.SessionId);
                     table.ForeignKey(
                         name: "FK_Sessions_Users_TrainerUserId",
                         column: x => x.TrainerUserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -96,19 +87,15 @@ namespace FitFinder.Infrastructure.Migrations
                 name: "Bookings",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
+                    BookingId = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedByUserId = table.Column<long>(nullable: false),
-                    CreatedUtc = table.Column<DateTime>(nullable: false),
-                    LastModifiedByUserId = table.Column<long>(nullable: true),
-                    LastModifiedUtc = table.Column<DateTime>(nullable: true),
                     BookingStatusId = table.Column<int>(nullable: false, defaultValue: 1),
                     ClientUserId = table.Column<long>(nullable: false),
                     SessionId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.PrimaryKey("PK_Bookings", x => x.BookingId);
                     table.ForeignKey(
                         name: "FK_Bookings_BookingStatus_BookingStatusId",
                         column: x => x.BookingStatusId,
@@ -119,13 +106,13 @@ namespace FitFinder.Infrastructure.Migrations
                         name: "FK_Bookings_Users_ClientUserId",
                         column: x => x.ClientUserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Bookings_Sessions_SessionId",
                         column: x => x.SessionId,
                         principalTable: "Sessions",
-                        principalColumn: "Id",
+                        principalColumn: "SessionId",
                         onDelete: ReferentialAction.Cascade);
                 });
 

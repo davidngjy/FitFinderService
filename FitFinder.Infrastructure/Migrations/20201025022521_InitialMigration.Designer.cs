@@ -4,15 +4,17 @@ using FitFinder.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
 namespace FitFinder.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201025022521_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,18 +35,6 @@ namespace FitFinder.Infrastructure.Migrations
 
                     b.Property<long>("ClientUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<long>("CreatedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifiedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("LastModifiedUtc")
-                        .HasColumnType("datetime2");
 
                     b.Property<long>("SessionId")
                         .HasColumnType("bigint");
@@ -98,12 +88,6 @@ namespace FitFinder.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("CreatedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -115,12 +99,6 @@ namespace FitFinder.Infrastructure.Migrations
 
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
-
-                    b.Property<long?>("LastModifiedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("LastModifiedUtc")
-                        .HasColumnType("datetime2");
 
                     b.Property<Point>("Location")
                         .IsRequired()
@@ -156,12 +134,6 @@ namespace FitFinder.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("CreatedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
@@ -171,12 +143,6 @@ namespace FitFinder.Infrastructure.Migrations
                     b.Property<string>("GoogleId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<long?>("LastModifiedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("LastModifiedUtc")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("ProfilePictureUri")
                         .HasColumnType("nvarchar(max)");
