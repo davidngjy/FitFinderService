@@ -89,5 +89,32 @@ namespace FitFinder.Grpc.Services
 				_logger.LogInformation(ex, "User {userId} stopped subscribing to UserSession", userId);
 			}
 		}
+
+		public override async Task SubscribeToSessionBooking(Empty request, IServerStreamWriter<UserSession> responseStream, ServerCallContext context)
+		{
+			var userId = context.GetUserId();
+
+			var sessions = await _sessionHandler.GetUserBookingSession(userId, context.CancellationToken);
+
+			await responseStream.WriteAllAsync(sessions);
+
+			async Task WriteUserSession(UserSession session)
+			{
+				await responseStream.WriteAsync(session);
+			}
+
+			try
+			{
+				using (_sessionHandler.SubscribeToSessionBookingInsert(userId, async s => await WriteUserSession(s), context.CancellationToken))
+				using (_sessionHandler.SubscribeToSessionBookingUpdate(userId, async s => await WriteUserSession(s), context.CancellationToken))
+				{
+					await Task.Delay(-1, context.CancellationToken);
+				}
+			}
+			catch (TaskCanceledException ex)
+			{
+				_logger.LogInformation(ex, "User {userId} stopped subscribing to SessionBooking", userId);
+			}
+		}
 	}
 }
