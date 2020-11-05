@@ -41,7 +41,7 @@ namespace FitFinder.Infrastructure.Migrations
                     GoogleId = table.Column<string>(nullable: false),
                     DisplayName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
-                    ProfilePictureUri = table.Column<string>(nullable: true),
+                    ProfilePicture = table.Column<byte[]>(nullable: true),
                     UserRoleId = table.Column<int>(nullable: false, defaultValue: 3)
                 },
                 constraints: table =>

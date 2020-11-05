@@ -178,8 +178,8 @@ namespace FitFinder.Infrastructure.Migrations
                     b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProfilePictureUri")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("ProfilePicture")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("UserRoleId")
                         .HasColumnType("int")

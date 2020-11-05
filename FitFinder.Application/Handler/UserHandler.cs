@@ -4,9 +4,11 @@ using FitFinder.Application.Model;
 using FitFinder.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FitFinder.Protos;
+using Google.Protobuf;
 
 namespace FitFinder.Application.Handler
 {
@@ -30,15 +32,17 @@ namespace FitFinder.Application.Handler
 
 		public async Task CreateUser(VerifiedUser user, CancellationToken ct)
 		{
-			_context.Users.Add(new User
+			using (var webClient = new WebClient())
 			{
-				GoogleId = user.GoogleId,
-				DisplayName = user.DisplayName,
-				Email = user.Email,
-				ProfilePictureUri = user.ProfilePictureUri,
-				UserRoleId = UserRoleId.User
-			});
-
+				_context.Users.Add(new User
+				{
+					GoogleId = user.GoogleId,
+					DisplayName = user.DisplayName,
+					Email = user.Email,
+					ProfilePicture = webClient.DownloadData(user.ProfilePictureUri),
+					UserRoleId = UserRoleId.User
+				});
+			}
 			await _context.SaveChangesAsync(ct);
 		}
 
@@ -56,7 +60,7 @@ namespace FitFinder.Application.Handler
 					GoogleId = user.GoogleId,
 					Email = user.Email,
 					DisplayName = user.DisplayName,
-					ProfilePictureUri = user.ProfilePictureUri,
+					ProfilePicture = ByteString.CopyFrom(user.ProfilePicture),
 					UserRole = (UserProfile.Types.UserRole) user.UserRoleId
 				};
 		}
@@ -75,7 +79,7 @@ namespace FitFinder.Application.Handler
 					GoogleId = user.GoogleId,
 					Email = user.Email,
 					DisplayName = user.DisplayName,
-					ProfilePictureUri = user.ProfilePictureUri,
+					ProfilePicture = ByteString.CopyFrom(user.ProfilePicture),
 					UserRole = (UserProfile.Types.UserRole)user.UserRoleId
 				};
 		}
@@ -92,8 +96,27 @@ namespace FitFinder.Application.Handler
 
 			user.DisplayName = updateRequest.DisplayName;
 			user.Email = updateRequest.Email;
-			user.ProfilePictureUri = updateRequest.ProfilePictureUri;
+			user.ProfilePicture = updateRequest.ProfilePicture.ToByteArray();
 			await _context.SaveChangesAsync(ct);
+		}
+
+		public async Task<LimitedUserProfile> GetLimitedUserProfile(long userId, CancellationToken ct)
+		{
+			var user = await _context
+				.Users
+				.Where(u => u.UserId == userId)
+				.FirstOrDefaultAsync(ct);
+
+			if (user == null)
+				return null;
+
+			return new LimitedUserProfile
+			{
+				UserId = user.UserId,
+				DisplayName = user.DisplayName,
+				Email = user.Email,
+				ProfilePicture = ByteString.CopyFrom(user.ProfilePicture),
+			};
 		}
 
 		public IDisposable SubscribeToUserProfile(long userId, Action<UserProfile> callback)
@@ -106,7 +129,7 @@ namespace FitFinder.Application.Handler
 					GoogleId = user.GoogleId,
 					DisplayName = user.DisplayName,
 					Email = user.Email,
-					ProfilePictureUri = user.ProfilePictureUri,
+					ProfilePicture = ByteString.CopyFrom(user.ProfilePicture),
 					UserRole = (UserProfile.Types.UserRole) user.UserRoleId
 				});
 			});

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FitFinder.Infrastructure.Migrations
 {
-    public partial class AddAuditableEntityToTables : Migration
+    public partial class AddAuditableEntityToAllEntity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

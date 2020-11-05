@@ -16,7 +16,7 @@ namespace FitFinder.Domain.Entity
 
 		public string Email { get; set; }
 
-		public string ProfilePictureUri { get; set; }
+		public byte[] ProfilePicture { get; set; }
 
 		public UserRoleId UserRoleId { get; set; } = UserRoleId.User;
 

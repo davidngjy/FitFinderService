@@ -13,6 +13,7 @@ namespace FitFinder.Application.Interface
 		Task<UserProfile> GetUserProfile(string googleId, CancellationToken ct);
 		Task<UserProfile> GetUserProfile(long userId, CancellationToken ct);
 		Task UpdateUserProfile(long userId, UpdateUserProfileRequest updateRequest, CancellationToken ct);
+		Task<LimitedUserProfile> GetLimitedUserProfile(long userId, CancellationToken ct);
 		IDisposable SubscribeToUserProfile(long userId, Action<UserProfile> callback);
 	}
 }

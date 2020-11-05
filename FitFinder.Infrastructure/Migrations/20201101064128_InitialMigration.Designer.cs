@@ -11,7 +11,7 @@ using NetTopologySuite.Geometries;
 namespace FitFinder.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201025022521_InitialMigration")]
+    [Migration("20201101064128_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,8 +144,8 @@ namespace FitFinder.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProfilePictureUri")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("ProfilePicture")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("UserRoleId")
                         .HasColumnType("int")

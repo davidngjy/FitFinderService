@@ -82,5 +82,10 @@ namespace FitFinder.Grpc.Services
 			await _userHandler.UpdateUserProfile(userId, request, context.CancellationToken);
 			return new Response {ResultStatus = Response.Types.Status.Success};
 		}
+
+		public override Task<LimitedUserProfile> GetUserProfile(UserProfileRequest request, ServerCallContext context)
+		{
+			return _userHandler.GetLimitedUserProfile(request.UserId, context.CancellationToken);
+		}
 	}
 }
