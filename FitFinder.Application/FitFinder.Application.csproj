@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Nullable>disable</Nullable>
+    <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>47c454ab-4182-46c7-8a98-5f67dd5f6298</UserSecretsId>
   </PropertyGroup>
 
@@ -12,18 +11,18 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.13.0" />
-    <PackageReference Include="Grpc.Core" Version="2.32.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.32.0">
+    <PackageReference Include="Grpc.Core" Version="2.33.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.33.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\result.proto" GrpcServices="Server" ProtoRoot=".\Protos\"/>
-    <Protobuf Include="Protos\user.proto" GrpcServices="Server" ProtoRoot=".\Protos\"/>
-    <Protobuf Include="Protos\session.proto" GrpcServices="Server" ProtoRoot=".\Protos\"/>
+    <Protobuf Include="Protos\result.proto" GrpcServices="Server" ProtoRoot=".\Protos\" />
+    <Protobuf Include="Protos\user.proto" GrpcServices="Server" ProtoRoot=".\Protos\" />
+    <Protobuf Include="Protos\session.proto" GrpcServices="Server" ProtoRoot=".\Protos\" />
   </ItemGroup>
 
   <ItemGroup>
