@@ -9,6 +9,7 @@ using FitFinder.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Geometries.Implementation;
 
 namespace FitFinder.Application.Handler
 {
@@ -25,18 +26,23 @@ namespace FitFinder.Application.Handler
 
 		public async Task<IEnumerable<UserSession>> GetAvailableSessionByRegion(Region region, CancellationToken ct)
 		{
-			var sessions = await _context
+			var coordinates = new[]
+			{
+				new Coordinate(region.NorthEastBound.Longitude, region.NorthEastBound.Latitude),
+				new Coordinate(region.SouthWestBound.Longitude, region.NorthEastBound.Latitude),
+				new Coordinate(region.SouthWestBound.Longitude, region.SouthWestBound.Latitude),
+				new Coordinate(region.NorthEastBound.Longitude, region.SouthWestBound.Latitude),
+				new Coordinate(region.NorthEastBound.Longitude, region.NorthEastBound.Latitude)
+			};
+
+			var border = new GeometryFactory(new PrecisionModel(PrecisionModel.MaximumPreciseValue), 4326).CreatePolygon(new CoordinateArraySequence(coordinates));
+
+			return await _context
 				.Sessions
 				.Include(s => s.Booking)
-				.Where(s => s.Location.X <= region.NorthEastBound.Longitude
-				            && s.Location.X >= region.SouthWestBound.Longitude
-				            && s.Location.Y <= region.NorthEastBound.Latitude
-				            && s.Location.Y >= region.SouthWestBound.Latitude
+				.Where(s => s.Location.Within(border)
 				            && s.Booking == null
 				            && s.SessionDateTime > DateTime.UtcNow)
-				.ToListAsync(ct);
-
-			return sessions
 				.Select(s => new UserSession
 				{
 					SessionId = s.SessionId,
@@ -53,7 +59,8 @@ namespace FitFinder.Application.Handler
 					BookingId = null,
 					ClientUserId = null,
 					BookingStatus = Protos.BookingStatus.Unknown
-				});
+				})
+				.ToListAsync(ct);
 		}
 
 		public async Task<UserSession> GetSession(long sessionId, CancellationToken ct)
